@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/main_search"
+        android:icon="@android:drawable/ic_search_category_default"
+        android:title="검색"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/main_menu"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="메뉴"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_login"
+                android:title="로그인" />
+            <item
+                android:id="@+id/menu_regist"
+                android:title="회원가입" />
+            <item
+                android:id="@+id/menu_mypage"
+                android:title="마이페이지" />
+            <item
+                android:id="@+id/menu_partner"
+                android:title="파트너신청" />
+            <item
+                android:id="@+id/menu_store"
+                android:title="스토어" />
+            <item
+                android:id="@+id/menu_article"
+                android:title="게시판" />
+
+        </menu>
+    </item>
+
+</menu>
