@@ -16,7 +16,8 @@ import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
-
+    //sdfsadfasdadfsfdasdf
+    //굉장히 느낌이 좋지않아...
     Toolbar toolBar;
     SearchView main_search;
     EditText str_main_search;
