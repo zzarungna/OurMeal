@@ -41,7 +41,7 @@ import java.net.URLConnection;
 public class MyPageActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "아이유";
-
+//kljl;kj;ljkk;lj
     Toolbar toolBar;
 
     // 개인 정보 수정
