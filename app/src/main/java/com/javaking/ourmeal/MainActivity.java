@@ -16,8 +16,7 @@ import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
-    //sdfsadfasdadfsfdasdf
-    //굉장히 느낌이 좋지않아...
+
     Toolbar toolBar;
     SearchView main_search;
     EditText str_main_search;
@@ -92,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.menu_regist:
                 Toast.makeText(this, "회원가입", Toast.LENGTH_LONG).show();
+                intent = new Intent(getApplicationContext(), RegistActivity.class);
+                startActivity(intent);
                 break;
             case R.id.menu_mypage:
                 Toast.makeText(this, "마이페이지", Toast.LENGTH_LONG).show();

@@ -30,7 +30,9 @@
         <activity android:name=".MyPageActivity" />
         <activity android:name=".ArticleActivity" />
         <activity android:name=".StoreActivity" />
-        <activity android:name=".PartnerActivity"></activity>
+        <activity android:name=".PartnerActivity"/>
+        <activity android:name=".RegistActivity"/>
+        <activity android:name=".DaumWebViewActivity"></activity>
     </application>
 
 </manifest>
