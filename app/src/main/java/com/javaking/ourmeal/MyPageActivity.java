@@ -41,7 +41,10 @@ import java.net.URLConnection;
 public class MyPageActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "아이유";
-//kljl;kj;ljkk;lj
+    private static final String IP = "http://192.168.10.50:8080";//학원
+    //private static final String IP = "http://192.168.0.229:8080";//학원 맥
+    //집 추가로 나중에
+
     Toolbar toolBar;
 
     // 개인 정보 수정
@@ -167,9 +170,7 @@ public class MyPageActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                URL endPoint = new URL("http://192.168.0.17:8080/OurMeal/myPage/Health"); //집
-                                //URL endPoint = new URL("http://192.168.10.50:8080/OurMeal/myPage/Health"); //학원
-                                //URL endPoint = new URL("http://192.168.0.229:8080/OurMeal/myPage/Health"); //학원 맥
+                                URL endPoint = new URL(IP + "/OurMeal/myPage/Health"); //집
 
                                 HttpURLConnection myConnection =
                                         (HttpURLConnection) endPoint.openConnection();
@@ -248,9 +249,7 @@ public class MyPageActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    URL endPoint = new URL("http://192.168.0.17:8080/OurMeal/myPage/select"); //집
-                    //URL endPoint = new URL("http://192.168.10.50:8080/OurMeal/myPage/select"); //학원 윈도우
-                    //URL endPoint = new URL("http://192.168.0.229:8080/OurMeal/myPage/select"); //학원 맥
+                    URL endPoint = new URL(IP + "/OurMeal/myPage/select");
 
                     HttpURLConnection myConnection =
                             (HttpURLConnection) endPoint.openConnection();
@@ -312,9 +311,7 @@ public class MyPageActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                URL endPoint = new URL("http://192.168.0.17:8080/OurMeal/myPage/profile_update"); //집
-                                //URL endPoint = new URL("http://192.168.10.50:8080/OurMeal/myPage/profile_update"); //학원
-                                //URL endPoint = new URL("http://192.168.0.229:8080/OurMeal/myPage/profile_update"); //학원 맥
+                                URL endPoint = new URL(IP + "/OurMeal/myPage/profile_update");
 
                                 HttpURLConnection myConnection =
                                         (HttpURLConnection) endPoint.openConnection();
@@ -401,9 +398,7 @@ public class MyPageActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                URL endPoint = new URL("http://192.168.0.17:8080/OurMeal/myPage/password_update"); //집
-                                //URL endPoint = new URL("http://192.168.10.50:8080/OurMeal/myPage/password_update"); //학원
-                                //URL endPoint = new URL("http://192.168.0.229:8080/OurMeal/myPage/password_update"); //학원 맥
+                                URL endPoint = new URL(IP + "/OurMeal/myPage/password_update"); //집
 
                                 HttpURLConnection myConnection =
                                         (HttpURLConnection) endPoint.openConnection();
@@ -483,9 +478,7 @@ public class MyPageActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                URL endPoint = new URL("http://192.168.0.17:8080/OurMeal/myPage/Health"); //집
-                                //URL endPoint = new URL("http://192.168.10.50:8080/OurMeal/myPage/Health"); //학원
-                                //URL endPoint = new URL("http://192.168.0.229:8080/OurMeal/myPage/Health"); //학원 맥
+                                URL endPoint = new URL(IP + "/OurMeal/myPage/Health");
 
                                 HttpURLConnection myConnection =
                                         (HttpURLConnection) endPoint.openConnection();
