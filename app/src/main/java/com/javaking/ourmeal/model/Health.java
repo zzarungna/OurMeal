@@ -1,4 +1,4 @@
-package com.javaking.ourmeal;
+package com.javaking.ourmeal.model;
 
 public class Health {
     private String health_no;

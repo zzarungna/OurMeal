@@ -22,9 +22,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.javaking.ourmeal.model.Health;
+import com.javaking.ourmeal.model.Member;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -33,13 +32,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class MyPageActivity extends AppCompatActivity {
 
