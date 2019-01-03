@@ -132,6 +132,15 @@ public class MyPageActivity extends AppCompatActivity {
 
     public void setEvents() {
 
+        //취소 버튼
+        btn_my_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyPageActivity.super.onBackPressed();
+            }
+        });
+
+        //이미지 파일 첨부
         btn_mb_imageset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,7 +149,6 @@ public class MyPageActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
 
                 startActivityForResult(intent, 1);
-
 
             }
         });
@@ -752,6 +760,7 @@ public class MyPageActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     @Override
@@ -774,7 +783,8 @@ public class MyPageActivity extends AppCompatActivity {
                     Bitmap img = BitmapFactory.decodeStream(in);
                     in.close();
                     // 이미지 표시
-                    image_mb.setImageBitmap(img);
+                    image_mb.setImageBitmap(Bitmap.createScaledBitmap(img,730, 710, false));
+                    //imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, 130, 110, false));
                     num = 1;
                     image_path = getFilesDir().toString();
 
@@ -787,9 +797,6 @@ public class MyPageActivity extends AppCompatActivity {
 
                     fos.flush();
                     fos.close();
-
-                    Toast.makeText(this, "file ok", Toast.LENGTH_SHORT).show();
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

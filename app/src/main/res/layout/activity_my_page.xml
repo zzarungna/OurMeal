@@ -215,7 +215,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:hint="기존 비밀번호를 입력하세요."
-                    android:inputType="textPersonName" />
+                    android:inputType="textPassword" />
 
             </LinearLayout>
 
@@ -240,7 +240,8 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:hint="새로운 비밀번호를 입력하세요."
-                    android:inputType="textPersonName" />
+                    android:inputType="textPassword"
+                     />
             </LinearLayout>
 
             <LinearLayout
@@ -264,7 +265,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:hint="새로운 비밀번호를 확인해 주세요."
-                    android:inputType="textPersonName" />
+                    android:inputType="textPassword" />
             </LinearLayout>
         </LinearLayout>
 
@@ -415,13 +416,14 @@
             android:id="@+id/layout_mb_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/image_mb"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="320dp"
+                android:layout_height="320dp"
                 app:srcCompat="@drawable/no_image" />
 
             <LinearLayout
@@ -441,7 +443,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                android:text="사진 파일 첨부" />
+                android:text="사진 파일 변경 및 등록" />
 
             <LinearLayout
                 android:layout_width="match_parent"
