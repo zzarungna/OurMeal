@@ -19,12 +19,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,7 +46,13 @@ public class MyPageActivity extends AppCompatActivity {
     private static final String LOG_TAG = "아이유";
     private static final String IP = "http://192.168.10.50:8080";//학원
     //private static final String IP = "http://192.168.0.229:8080";//학원 맥
-    //집 추가로 나중에
+    //나중에 집 추가
+
+    String image_path = null;
+    String image_name = null;
+
+    String profile_imgpath = "http://192.168.10.50:8080/OurMeal";
+    String profile_db_imagepath = null;
 
     Toolbar toolBar;
 
@@ -79,6 +88,9 @@ public class MyPageActivity extends AppCompatActivity {
     TextView testLog;
 
     public void initRefs() {
+
+
+
         // 개인 정보 수정btn_my_ok
         layout_mb_dataupdate = (LinearLayout)findViewById(R.id.layout_mb_dataupdate);
         btn_mb_dataupdate = findViewById(R.id.btn_mb_dataupdate);
@@ -112,7 +124,11 @@ public class MyPageActivity extends AppCompatActivity {
         str_mb_kcal.setClickable(false);
 
         testLog = (TextView)findViewById(R.id.textView_log);
+
+
     }
+
+    int num = 0;
 
     public void setEvents() {
 
@@ -124,6 +140,8 @@ public class MyPageActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
 
                 startActivityForResult(intent, 1);
+
+
             }
         });
 
@@ -300,6 +318,104 @@ public class MyPageActivity extends AppCompatActivity {
         btn_my_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //이미지 사진이 바꼈을때
+                if(num != 0 ){
+                    //웹서버에 사진이미지 파일 전송.
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+
+                                String attachmentName = "file";
+                                String attachmentFileName = null;
+
+                                if(image_path!=null) {
+                                    //파일 이름
+                                    attachmentFileName  = image_name;
+                                    Log.d("CheckImage", Integer.toString(image_path.length()));
+                                }
+                                Log.d("CheckImage 경로", image_path);
+                                String crlf = "\r\n";
+                                String twoHyphens = "--";
+                                String boundary = "*****";
+
+                                HttpURLConnection httpUrlConnection = null;
+                                URL url = new URL(IP + "/OurMeal/myPage/profile_image_upload");
+
+                                httpUrlConnection = (HttpURLConnection) url.openConnection();
+                                httpUrlConnection.setUseCaches(false);
+                                httpUrlConnection.setDoOutput(true);
+                                httpUrlConnection.setRequestMethod("POST");
+
+                                // key, value 형태 // Content-Type: multipart/form-data; boundary=*****
+                                httpUrlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+
+                                DataOutputStream request = new DataOutputStream(httpUrlConnection.getOutputStream());
+
+                                // 프로필 파일 넘기기
+                                // --*****\r\n
+                                // Content-Disposition: form-data; name="file" ;
+                                //
+                                // 파일 값
+                                //
+
+                                // 0이 아닐때만 보내도록 // 이미지 첨부하지 않은때도 있으므로
+                                if(image_path!=null) {
+                                    request.writeBytes(twoHyphens + boundary + crlf);
+                                    request.writeBytes("Content-Disposition: form-data; name= \"file\" ;filename=\"" + attachmentFileName + "\"" + crlf);
+
+                                    request.writeBytes(crlf);
+
+                                    FileInputStream fStream = new FileInputStream(image_path+"/" + image_name);
+                                    byte buffer5[] = new byte[1024];
+                                    int length = -1;
+                                    while ((length = fStream.read(buffer5)) != -1) {
+                                        request.write(buffer5, 0, length);
+                                    }
+                                    request.writeBytes(crlf);
+                                }
+
+                                // 마지막에 닫어줘야한다 // 끝태그
+                                request.writeBytes(twoHyphens + boundary);
+
+
+                                if (httpUrlConnection.getResponseCode() == 200) {
+                                    // Success
+                                    BufferedReader in =
+                                            new BufferedReader(
+                                                    new InputStreamReader(
+                                                            httpUrlConnection.getInputStream()));
+                                    StringBuffer buffer = new StringBuffer();
+                                    String temp = null;
+                                    while((temp = in.readLine())!=null)
+                                        buffer.append(temp);
+
+                                    Gson gson = new Gson();
+                                    final String result = gson.fromJson(buffer.toString(), String.class);
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(!result.equals("0")){
+                                                Toast.makeText(getApplicationContext(), "사진 등록 및 변경 성공", Toast.LENGTH_SHORT).show();
+                                                Glide.with(getApplicationContext()).load(profile_imgpath + result).into(image_mb);
+                                            }else{
+                                                Toast.makeText(getApplicationContext(), "사진 등록 및 변경 실패", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                    });
+
+                }
+
                 //개인정보 수정 진행
                 if( str_mb_name.getText().toString().trim().length() > 0 ||
                         str_mb_email.getText().toString().trim().length() > 0 ||
@@ -572,6 +688,70 @@ public class MyPageActivity extends AppCompatActivity {
         initRefs();
         setEvents();
         setSupportActionBar(toolBar);
+
+        //기본 프로필 이미지 체크 및 가져오기.
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL endPoint = new URL(IP + "/OurMeal/myPage/profile_image_select");
+
+                    HttpURLConnection myConnection =
+                            (HttpURLConnection) endPoint.openConnection();
+                    myConnection.setRequestMethod("POST");
+
+                    String id = "TEST01";
+
+                    String requestParam = String.format("id=%s", id);
+
+                    myConnection.setDoOutput(true);
+                    myConnection.getOutputStream().write(requestParam.getBytes());
+
+                    if (myConnection.getResponseCode() == 200) {
+                        // Success
+                        BufferedReader in =
+                                new BufferedReader(
+                                        new InputStreamReader(
+                                                myConnection.getInputStream()));
+                        StringBuffer buffer = new StringBuffer();
+                        String temp = null;
+                        while((temp = in.readLine())!=null)
+                            buffer.append(temp);
+
+                        Gson gson = new Gson();
+                        final String result = gson.fromJson(buffer.toString(), String.class);
+
+                        if(result!=null){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Glide.with(getApplicationContext()).load(profile_imgpath + result).into(image_mb);
+                                }
+                            });
+                        }
+
+                        in.close();
+                    } else {
+                        // Error
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패1", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                } catch (Exception e) {
+                    Log.d(LOG_TAG, e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패2", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @Override
@@ -581,14 +761,13 @@ public class MyPageActivity extends AppCompatActivity {
         // Check which request we're responding to
         if (requestCode == 1) {
 
-            Uri uri = data.getData();
-            String path = getPath(uri);
-            String name = getName(uri);
-            String uriId = getUriId(uri);
-            Log.e("###", "실제경로 : " + path + "\n파일명 : " + name + "\nuri : " + uri.toString() + "\nuri id : " + uriId);
-
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
+                final Uri uri = data.getData();
+                final String path = getPath(uri);
+                image_name = getName(uri);
+                //final String name = getName(uri);
+
                 try {
                     // 선택한 이미지에서 비트맵 생성
                     InputStream in = getContentResolver().openInputStream(data.getData());
@@ -596,18 +775,15 @@ public class MyPageActivity extends AppCompatActivity {
                     in.close();
                     // 이미지 표시
                     image_mb.setImageBitmap(img);
-
-                    testLog.setText("");
-                    testLog.setText("파일 디렉토리" +getFilesDir().toString() + "\n" + "파일 이름 : " + name + "\n파일 경로 : " + path);
+                    num = 1;
+                    image_path = getFilesDir().toString();
 
                     //데이타 업로드시 data 폴더에 이미지 파일 저장하기.
-                    File file = new File(name);
-                    FileOutputStream fos = openFileOutput(name, 0);
+                    File file = new File(image_name);
+                    FileOutputStream fos = openFileOutput(image_name, 0);
 
                     //안드로이드 로컬 데이터에 사진이미지 저장
                     img.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-
-                    //웹서버에 사진이미지 파일 전송.
 
                     fos.flush();
                     fos.close();
@@ -652,109 +828,4 @@ public class MyPageActivity extends AppCompatActivity {
         return cursor.getString(column_index);
     }
 
-
-    private void HttpMultiPart(final File file){
-
-        new AsyncTask<Void, Void, JSONObject>(){
-
-            @Override
-            protected JSONObject doInBackground(Void... voids) {
-
-                String boundary = "^-----^";
-                String LINE_FEED = "\r\n";
-                String charset = "UTF-8";
-                OutputStream outputStream;
-                PrintWriter writer;
-
-                JSONObject result = null;
-                try{
-                    URL url = new URL("http://192.168.0.17:8080/OurMeal/myPage/profile_image");
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-                    connection.setRequestProperty("Content-Type", "multipart/form-data;charset=utf-8;boundary=" + boundary);
-                    connection.setRequestMethod("POST");
-                    connection.setDoInput(true);
-                    connection.setDoOutput(true);
-                    connection.setUseCaches(false);
-                    connection.setConnectTimeout(15000);
-
-                    outputStream = connection.getOutputStream();
-                    writer = new PrintWriter(new OutputStreamWriter(outputStream, charset), true);
-
-                    /** Body에 데이터를 넣어줘야 할경우 없으면 Pass **/
-                    writer.append("--" + boundary).append(LINE_FEED);
-                    writer.append("Content-Disposition: form-data; name=\"데이터 키값\"").append(LINE_FEED);
-                    writer.append("Content-Type: text/plain; charset=" + charset).append(LINE_FEED);
-                    writer.append(LINE_FEED);
-                    writer.append("데이터값").append(LINE_FEED);
-                    writer.flush();
-
-                    /** 파일 데이터를 넣는 부분**/
-                    writer.append("--" + boundary).append(LINE_FEED);
-                    writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"").append(LINE_FEED);
-                    writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName())).append(LINE_FEED);
-                    writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
-                    writer.append(LINE_FEED);
-                    writer.flush();
-
-                    FileInputStream inputStream = new FileInputStream(file);
-                    byte[] buffer = new byte[(int)file.length()];
-                    int bytesRead = -1;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-                    outputStream.flush();
-                    inputStream.close();
-                    writer.append(LINE_FEED);
-                    writer.flush();
-
-                    writer.append("--" + boundary + "--").append(LINE_FEED);
-                    writer.close();
-
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String inputLine;
-                        StringBuffer response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null) {
-                            response.append(inputLine);
-                        }
-                        in.close();
-
-                        try {
-                            result = new JSONObject(response.toString());
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                        String inputLine;
-                        StringBuffer response = new StringBuffer();
-                        while ((inputLine = in.readLine()) != null) {
-                            response.append(inputLine);
-                        }
-                        in.close();
-                        result = new JSONObject(response.toString());
-                    }
-
-                } catch (ConnectException e) {
-                    Log.e(LOG_TAG, "ConnectException");
-                    e.printStackTrace();
-
-
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-
-                return result;
-            }
-
-            @Override
-            protected void onPostExecute(JSONObject jsonObject) {
-                super.onPostExecute(jsonObject);
-            }
-
-        }.execute();
-    }
 }
