@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class RegistActivity  extends AppCompatActivity {
+// 김민준 바보
 
     private static final int REQUEST_CODE_INSERT = 1;
     RadioButton radiobtn_male;
