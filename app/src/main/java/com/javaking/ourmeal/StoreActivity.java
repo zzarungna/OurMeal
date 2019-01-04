@@ -4,6 +4,7 @@ import android.Manifest;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
@@ -13,6 +14,7 @@ import android.os.AsyncTask;
 
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,9 +27,11 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -81,7 +85,9 @@ public class StoreActivity extends AppCompatActivity {
     RecyclerView.LayoutManager mLayoutManager;
 
     Button btn_more;
-
+    //별점
+    RatingBar rb;
+    String start_number = null;
     public RequestManager mGlideRequestManager;
 
     final String sc = "";
@@ -107,7 +113,7 @@ public class StoreActivity extends AppCompatActivity {
         str_reviewCount = (TextView)findViewById(R.id.str_reviewCount);
         btn_more = findViewById(R.id.btn_more);
         mapView = findViewById(R.id.map_view);
-
+        rb = (RatingBar)findViewById(R.id.start_score);
 
     }
 
@@ -117,12 +123,36 @@ public class StoreActivity extends AppCompatActivity {
     }
     public void setEvents() {
 
-
+        //별점
+        rb.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                store_info.setText("aaaa");
+            }
+        });
 
         btn_review.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"리뷰작성",Toast.LENGTH_SHORT).show();
+                final View dialogView = (View)View.inflate(StoreActivity.this, R.layout.review_write, null);
+                AlertDialog.Builder dig = new AlertDialog.Builder(StoreActivity.this);
+                dig.setView(dialogView);
+
+                dig.setPositiveButton("리뷰작성", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText test1 = (EditText)dialogView.findViewById(R.id.str_id);
+                        EditText test2 = (EditText)dialogView.findViewById(R.id.str_pw);
+
+                        String msg = "입력된 테스트 1 : " + test1.getText().toString() + "\n";
+                        msg += "입력된 테스트 2 : " + test2.getText().toString();
+
+                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+                dig.setNegativeButton("취소", null);
+                dig.show();
             }
         });
 
