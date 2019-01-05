@@ -2,8 +2,13 @@ package com.javaking.ourmeal;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -11,11 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class RegistActivity  extends AppCompatActivity {
-// 김민준 바보
 
     private static final int REQUEST_CODE_INSERT = 1;
     RadioButton radiobtn_male;
     RadioButton radiobtn_female;
+
+    Handler  handler;
 
     Button btn_member_address;
     Button btn_cancel;
@@ -39,6 +45,9 @@ public class RegistActivity  extends AppCompatActivity {
     TextView member_phone_error;
     TextView member_address_error;
     TextView member_email_error;
+
+    private WebView daum_webView;
+    private TextView daum_result;
 
     public void initRefs() {
         radiobtn_male = findViewById(R.id.radiobtn_male);
@@ -68,9 +77,33 @@ public class RegistActivity  extends AppCompatActivity {
     public void setEvents() {
         btn_member_address.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(
-                        getApplicationContext(), DaumWebViewActivity.class);
-                startActivityForResult(intent, REQUEST_CODE_INSERT);
+                View address = View.inflate(getApplicationContext(),
+                        R.layout.activity_daum_web_view, null);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(RegistActivity.this);
+
+                // WebView 설정
+                daum_webView = address.findViewById(R.id.daum_webview);
+                daum_result = address.findViewById(R.id.daum_result);
+
+                // JavaScript 허용
+                daum_webView.getSettings().setJavaScriptEnabled(true);
+
+                // JavaScript의 window.open 허용
+                daum_webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+                // JavaScript이벤트에 대응할 함수를 정의 한 클래스를 붙여줌
+                daum_webView.addJavascriptInterface(new AndroidBridge(), "TestApp");
+
+                // web client 를 chrome 으로 설정
+                daum_webView.setWebChromeClient(new WebChromeClient());
+
+                // webview url load. jsp 파일 주소
+                daum_webView.loadUrl("http://192.168.0.13:8080/OurMeal/m_juso");
+
+                dialog.setView(address);
+                dialog.setTitle("주소 검색");
+                dialog.setPositiveButton("주소 등록", null);
+                dialog.show();
             }
         });
 
@@ -149,12 +182,12 @@ public class RegistActivity  extends AppCompatActivity {
                     member_phone_error.setText("");
                 }
 
-                String address = member_address.getText().toString().trim();
-                if( address.length() == 0 ) {
+                String address_01 = member_address.getText().toString().trim();
+                if( address_01.length() == 0 ) {
                     Toast.makeText(getApplicationContext(),
-                            "ADDRESS 값을 입력해 주세요.",
+                            "ADDRESS_01 값을 입력해 주세요.",
                             Toast.LENGTH_SHORT).show();
-                    member_address_error.setText("ADDRESS 값을 입력해 주세요.");
+                    member_address_error.setText("ADDRESS_01 값을 입력해 주세요.");
                     return;
                 } else {
                     member_address_error.setText("");
@@ -181,6 +214,22 @@ public class RegistActivity  extends AppCompatActivity {
 
         initRefs();
         setEvents();
+
+
+        handler = new Handler();
+    }
+
+    private class AndroidBridge {
+        @JavascriptInterface
+        public void setAddress(final String arg1, final String arg2, final String arg3) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    daum_result.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
+                    member_address.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
+                    // WebView를 초기화 하지않으면 재사용할 수 없음
+                }
+            });
+        }
     }
 }
-
