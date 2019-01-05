@@ -182,12 +182,12 @@ public class RegistActivity  extends AppCompatActivity {
                     member_phone_error.setText("");
                 }
 
-                String address_01 = member_address.getText().toString().trim();
-                if( address_01.length() == 0 ) {
+                String address = member_address.getText().toString().trim();
+                if( address.length() == 0 ) {
                     Toast.makeText(getApplicationContext(),
-                            "ADDRESS_01 값을 입력해 주세요.",
+                            "ADDRESS 값을 입력해 주세요.",
                             Toast.LENGTH_SHORT).show();
-                    member_address_error.setText("ADDRESS_01 값을 입력해 주세요.");
+                    member_address_error.setText("ADDRESS 값을 입력해 주세요.");
                     return;
                 } else {
                     member_address_error.setText("");
