@@ -36,7 +36,6 @@ public class RegistActivity  extends AppCompatActivity {
     EditText member_address_01;
     EditText member_address_02;
     EditText member_address_03;
-    EditText member_address_04;
     EditText member_email;
 
     TextView member_id_error;
@@ -67,7 +66,6 @@ public class RegistActivity  extends AppCompatActivity {
         member_address_01 = findViewById(R.id.member_address_01);
         member_address_02 = findViewById(R.id.member_address_02);
         member_address_03 = findViewById(R.id.member_address_03);
-        member_address_04 = findViewById(R.id.member_address_04);
         member_email = findViewById(R.id.member_email);
         member_id_error = findViewById(R.id.member_id_error);
         member_pw1_error = (TextView)findViewById(R.id.member_pw1_error);
@@ -104,7 +102,7 @@ public class RegistActivity  extends AppCompatActivity {
                 daum_webView.setWebChromeClient(new WebChromeClient());
 
                 // webview url load. jsp 파일 주소
-                daum_webView.loadUrl("http://192.168.0.13:8080/OurMeal/m_juso");
+                daum_webView.loadUrl("http://192.168.0.11:8080/OurMeal/m_juso");
 
                 dialog.setContentView(address);
                 dialog.setTitle("주소 검색");
@@ -220,17 +218,6 @@ public class RegistActivity  extends AppCompatActivity {
                     member_address_error.setText("");
                 }
 
-                String address_04 = member_address_04.getText().toString().trim();
-                if( address_04.length() == 0 ) {
-                    Toast.makeText(getApplicationContext(),
-                            "ADDRESS_04 값을 입력해 주세요.",
-                            Toast.LENGTH_SHORT).show();
-                    member_address_error.setText("ADDRESS_04 값을 입력해 주세요.");
-                    return;
-                } else {
-                    member_address_error.setText("");
-                }
-
                 String email = member_email.getText().toString().trim();
                 if (email.length() == 0 ) {
                     Toast.makeText(getApplicationContext(),
@@ -264,8 +251,7 @@ public class RegistActivity  extends AppCompatActivity {
                 public void run() {
                     daum_result.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
                     member_address_01.setText(String.format("(%s)", arg1));
-                    member_address_02.setText(String.format("%s", arg2));
-                    member_address_03.setText(String.format("%s", arg3));
+                    member_address_02.setText(String.format("%s %s", arg2, arg3));
                     // WebView를 초기화 하지않으면 재사용할 수 없음
                 }
             });
