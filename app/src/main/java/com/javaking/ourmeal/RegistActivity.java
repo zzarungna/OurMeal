@@ -1,5 +1,6 @@
 package com.javaking.ourmeal;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +18,10 @@ import android.widget.Toast;
 
 public class RegistActivity  extends AppCompatActivity {
 
-    private static final int REQUEST_CODE_INSERT = 1;
     RadioButton radiobtn_male;
     RadioButton radiobtn_female;
 
-    Handler  handler;
+    private Handler handler;
 
     Button btn_member_address;
     Button btn_cancel;
@@ -33,7 +33,10 @@ public class RegistActivity  extends AppCompatActivity {
     EditText member_name;
     EditText member_birth;
     EditText member_phone;
-    EditText member_address;
+    EditText member_address_01;
+    EditText member_address_02;
+    EditText member_address_03;
+    EditText member_address_04;
     EditText member_email;
 
     TextView member_id_error;
@@ -61,7 +64,10 @@ public class RegistActivity  extends AppCompatActivity {
         member_name = findViewById(R.id.member_name);
         member_birth = findViewById(R.id.member_birth);
         member_phone = findViewById(R.id.member_phone);
-        member_address = findViewById(R.id.member_address);
+        member_address_01 = findViewById(R.id.member_address_01);
+        member_address_02 = findViewById(R.id.member_address_02);
+        member_address_03 = findViewById(R.id.member_address_03);
+        member_address_04 = findViewById(R.id.member_address_04);
         member_email = findViewById(R.id.member_email);
         member_id_error = findViewById(R.id.member_id_error);
         member_pw1_error = (TextView)findViewById(R.id.member_pw1_error);
@@ -79,7 +85,7 @@ public class RegistActivity  extends AppCompatActivity {
             public void onClick(View v) {
                 View address = View.inflate(getApplicationContext(),
                         R.layout.activity_daum_web_view, null);
-                AlertDialog.Builder dialog = new AlertDialog.Builder(RegistActivity.this);
+                Dialog dialog = new Dialog(RegistActivity.this);
 
                 // WebView 설정
                 daum_webView = address.findViewById(R.id.daum_webview);
@@ -100,9 +106,8 @@ public class RegistActivity  extends AppCompatActivity {
                 // webview url load. jsp 파일 주소
                 daum_webView.loadUrl("http://192.168.0.13:8080/OurMeal/m_juso");
 
-                dialog.setView(address);
+                dialog.setContentView(address);
                 dialog.setTitle("주소 검색");
-                dialog.setPositiveButton("주소 등록", null);
                 dialog.show();
             }
         });
@@ -182,12 +187,45 @@ public class RegistActivity  extends AppCompatActivity {
                     member_phone_error.setText("");
                 }
 
-                String address = member_address.getText().toString().trim();
-                if( address.length() == 0 ) {
+                String address_01 = member_address_01.getText().toString().trim();
+                if( address_01.length() == 0 ) {
                     Toast.makeText(getApplicationContext(),
-                            "ADDRESS 값을 입력해 주세요.",
+                            "ADDRESS_01 값을 입력해 주세요.",
                             Toast.LENGTH_SHORT).show();
-                    member_address_error.setText("ADDRESS 값을 입력해 주세요.");
+                    member_address_error.setText("ADDRESS_01 값을 입력해 주세요.");
+                    return;
+                } else {
+                    member_address_error.setText("");
+                }
+
+                String address_02 = member_address_02.getText().toString().trim();
+                if( address_02.length() == 0 ) {
+                    Toast.makeText(getApplicationContext(),
+                            "ADDRESS_02 값을 입력해 주세요.",
+                            Toast.LENGTH_SHORT).show();
+                    member_address_error.setText("ADDRESS_02 값을 입력해 주세요.");
+                    return;
+                } else {
+                    member_address_error.setText("");
+                }
+
+                String address_03 = member_address_03.getText().toString().trim();
+                if( address_03.length() == 0 ) {
+                    Toast.makeText(getApplicationContext(),
+                            "ADDRESS_03 값을 입력해 주세요.",
+                            Toast.LENGTH_SHORT).show();
+                    member_address_error.setText("ADDRESS_03 값을 입력해 주세요.");
+                    return;
+                } else {
+                    member_address_error.setText("");
+                }
+
+                String address_04 = member_address_04.getText().toString().trim();
+                if( address_04.length() == 0 ) {
+                    Toast.makeText(getApplicationContext(),
+                            "ADDRESS_04 값을 입력해 주세요.",
+                            Toast.LENGTH_SHORT).show();
+                    member_address_error.setText("ADDRESS_04 값을 입력해 주세요.");
                     return;
                 } else {
                     member_address_error.setText("");
@@ -215,7 +253,6 @@ public class RegistActivity  extends AppCompatActivity {
         initRefs();
         setEvents();
 
-
         handler = new Handler();
     }
 
@@ -226,7 +263,9 @@ public class RegistActivity  extends AppCompatActivity {
                 @Override
                 public void run() {
                     daum_result.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
-                    member_address.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
+                    member_address_01.setText(String.format("(%s)", arg1));
+                    member_address_02.setText(String.format("%s", arg2));
+                    member_address_03.setText(String.format("%s", arg3));
                     // WebView를 초기화 하지않으면 재사용할 수 없음
                 }
             });

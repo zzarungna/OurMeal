@@ -5,18 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.javaking.ourmeal.DaumWebViewActivity">
+    tools:context="com.javaking.ourmeal.RegistActivity">
 
     <WebView
         android:id="@+id/daum_webview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="490dp"
         android:layout_weight="4" />
 
     <TextView
         android:id="@+id/daum_result"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="100dp"
         android:layout_weight="1"
         android:gravity="center"
         android:text="Result" />

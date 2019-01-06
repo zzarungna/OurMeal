@@ -169,12 +169,12 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/member_address"
+                android:id="@+id/member_address_01"
                 android:layout_width="294dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
                 android:ems="10"
-                android:hint="Input Address"
+                android:hint="Input Address_01"
                 android:inputType="textPostalAddress" />
 
             <Button
@@ -185,6 +185,37 @@
                 android:text="주소 검색" />
 
         </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <EditText
+            android:id="@+id/member_address_02"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Input Address_02"
+            android:inputType="textPostalAddress" />
+
+        <EditText
+            android:id="@+id/member_address_03"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Input Address_03"
+            android:inputType="textPostalAddress" />
+
+        <EditText
+            android:id="@+id/member_address_04"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Input Address_04"
+            android:inputType="textPostalAddress" />
+    </LinearLayout>
 
         <TextView
             android:id="@+id/member_address_error"
