@@ -782,6 +782,22 @@ public class MyPageActivity extends AppCompatActivity {
                     num = 1;
                     image_path = getFilesDir().toString();
 
+                    //upload before file delete
+                    File file_delete = new File(image_path);
+                    if(file_delete.exists()){
+                        if(file_delete.isDirectory()){
+                            File[] files = file_delete.listFiles();
+
+                            for(int i =0; i<files.length; i++){
+                                if(files[i].delete()){
+                                    Log.d("기존 파일 삭제", files[i].getName());
+                                }else{
+                                    Log.d("기존 파일 삭제 실패", files[i].getName());
+                                }
+                            }
+                        }
+                    }
+
                     //데이타 업로드시 data 폴더에 이미지 파일 저장하기.
                     File file = new File(image_name);
                     FileOutputStream fos = openFileOutput(image_name, 0);

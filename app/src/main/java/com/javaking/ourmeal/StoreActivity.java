@@ -2,16 +2,21 @@ package com.javaking.ourmeal;
 
 import android.Manifest;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import android.content.pm.Signature;
-import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 
+
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -19,11 +24,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
 
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -50,6 +53,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
@@ -64,8 +72,8 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String ip = "http://192.168.10.50";
-
+    //private static final String ip = "http://192.168.10.50"; //학원 내 윈도우 PC
+    private static final String ip = "http://192.168.0.17:8080"; //집
     // 지도 화면 View
 
     RelativeLayout mapView;
@@ -83,11 +91,14 @@ public class StoreActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
-
     Button btn_more;
-    //별점
-    RatingBar rb;
-    String start_number = null;
+    
+    Boolean profile_check;
+    View dialogView;
+    ImageButton image_btn;
+    String image_path = null;
+    String image_name = null;
+
     public RequestManager mGlideRequestManager;
 
     final String sc = "";
@@ -96,13 +107,7 @@ public class StoreActivity extends AppCompatActivity {
     public int num = RC;
     final ArrayList <Star_bulletin> list = new ArrayList<>();
 
-
-
-
-
-
     public void initRefs() {
-
         store_title= findViewById(R.id.store_title);
         score_avg = findViewById(R.id.score_avg);
         img_layout = findViewById(R.id.img_layout);
@@ -113,59 +118,223 @@ public class StoreActivity extends AppCompatActivity {
         str_reviewCount = (TextView)findViewById(R.id.str_reviewCount);
         btn_more = findViewById(R.id.btn_more);
         mapView = findViewById(R.id.map_view);
-        rb = (RatingBar)findViewById(R.id.start_score);
-
+        profile_check = false;
     }
 
     public int more_button(){
         num = num+5;
         return num;
     }
-    public void setEvents() {
 
-        //별점
-        rb.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                store_info.setText("aaaa");
+    //사진 파일 첨부후..
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1){
+            Log.d("아이유", "테스트");
+
+            try {
+                // 선택한 이미지에서 비트맵 생성
+                InputStream in = getContentResolver().openInputStream(data.getData());
+                Bitmap img = BitmapFactory.decodeStream(in);
+
+                final Uri uri = data.getData();
+                image_path = getFilesDir().toString();
+                image_name = getName(uri);
+
+                // 이미지 표시
+                image_btn.setImageBitmap(Bitmap.createScaledBitmap(img,730, 710, false));
+                profile_check = true;
+                in.close();
+
+                //upload before file delete
+                File file_delete = new File(image_path);
+                if(file_delete.exists()){
+                    if(file_delete.isDirectory()){
+                        File[] files = file_delete.listFiles();
+
+                        for(int i =0; i<files.length; i++){
+                            if(files[i].delete()){
+                                Log.d("기존 파일 삭제", files[i].getName());
+                            }else{
+                                Log.d("기존 파일 삭제 실패", files[i].getName());
+                            }
+                        }
+                    }
+                }else{
+                    Log.d("기존 파일","삭제할게 없음.");
+                }
+
+                //데이타 업로드시 data 폴더에 이미지 파일 저장하기.
+                File file = new File(image_name);
+                FileOutputStream fos = openFileOutput(image_name, 0);
+
+                //안드로이드 로컬 데이터에 사진이미지 저장
+                img.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+        }
+    }
+
+    public void setEvents() {
 
         btn_review.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final View dialogView = (View)View.inflate(StoreActivity.this, R.layout.review_write, null);
+                dialogView = (View)View.inflate(StoreActivity.this, R.layout.review_write, null);
                 AlertDialog.Builder dig = new AlertDialog.Builder(StoreActivity.this);
                 dig.setView(dialogView);
+
+                image_btn = dialogView.findViewById(R.id.imageButton);
+                image_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final Intent data = new Intent();
+                        data.setType("image/*");
+                        data.setAction(Intent.ACTION_GET_CONTENT);
+
+                        startActivityForResult(data, 1);
+                    }
+                });
 
                 dig.setPositiveButton("리뷰작성", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        EditText test1 = (EditText)dialogView.findViewById(R.id.str_id);
-                        EditText test2 = (EditText)dialogView.findViewById(R.id.str_pw);
 
-                        String msg = "입력된 테스트 1 : " + test1.getText().toString() + "\n";
-                        msg += "입력된 테스트 2 : " + test2.getText().toString();
+                        final EditText review = (EditText)dialogView.findViewById(R.id.review_text);
+                        final RatingBar rb = (RatingBar)dialogView.findViewById(R.id.start_score);
+                        //String msg = "입력된 리뷰 : " + review.getText();
+                        if(profile_check){
+                            //웹서버에 리뷰 등록
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        String attachmentFileName = null;
 
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                        if(profile_check) {
+                                            //파일 이름
+                                            attachmentFileName  = image_name;
+                                            Log.d("CheckImage", Integer.toString(image_path.length()));
+                                        }
+                                        Log.d("CheckImage 경로", image_path);
+                                        Log.d("CheckImage 이름", attachmentFileName);
+                                        String crlf = "\r\n";
+                                        String twoHyphens = "--";
+                                        String boundary = "*****";
 
+                                        HttpURLConnection httpUrlConnection = null;
+                                        URL url = new URL(ip + "/OurMeal/store/write_review");
+                                        httpUrlConnection = (HttpURLConnection) url.openConnection();
+                                        httpUrlConnection.setUseCaches(false);
+                                        httpUrlConnection.setDoOutput(true);
+                                        httpUrlConnection.setDoInput(true);
+                                        httpUrlConnection.setRequestMethod("POST");
+
+                                        final String id = "TEST01";
+                                        final String store_code = "S18122500001";
+                                        final String content = review.getText().toString();
+                                        final String sb_number = String.valueOf(rb.getRating());
+                                        Log.d("아이유", String.valueOf(sb_number));
+
+                                        // key, value 형태 // Content-Type: multipart/form-data; boundary=*****
+                                        httpUrlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                                        DataOutputStream request = new DataOutputStream(httpUrlConnection.getOutputStream());
+
+                                        if(profile_check) {
+                                            request.writeBytes(twoHyphens + boundary + crlf);
+                                            request.writeBytes("Content-Disposition: form-data; name= \"file\" ;filename=\"" + attachmentFileName + "\"" + crlf);
+                                            request.writeBytes(crlf);
+
+                                            FileInputStream fStream = new FileInputStream(image_path+"/" + image_name);
+                                            byte buffer5[] = new byte[1024];
+                                            int length = -1;
+                                            while ((length = fStream.read(buffer5)) != -1) {
+                                                request.write(buffer5, 0, length);
+                                            }
+                                            request.writeBytes(crlf);
+                                        }
+
+                                        //18 좉같다 진짜 이거는...아오
+                                        request.writeBytes(twoHyphens + boundary + crlf);
+                                        request.writeBytes("Content-Disposition: form-data; name=\"id\"" + crlf);
+                                        request.writeBytes(crlf);
+                                        request.writeBytes(id + crlf);
+                                        //이거는 진짜 심하다...
+
+                                        //18 좉같다 진짜 이거는...아오
+                                        request.writeBytes(twoHyphens + boundary + crlf);
+                                        request.writeBytes("Content-Disposition: form-data; name=\"store_code\"" + crlf);
+                                        request.writeBytes(crlf);
+                                        request.writeBytes(store_code + crlf);
+                                        //이거는 진짜 심하다...
+
+                                        //18 좉같다 진짜 이거는...아오
+                                        request.writeBytes(twoHyphens + boundary + crlf);
+                                        request.writeBytes("Content-Disposition: form-data; name=\"content\"" + crlf);
+                                        request.writeBytes(crlf);
+                                        request.writeBytes(content + crlf);
+                                        //이거는 진짜 심하다...
+
+                                        //18 좉같다 진짜 이거는...아오
+                                        request.writeBytes(twoHyphens + boundary + crlf);
+                                        request.writeBytes("Content-Disposition: form-data; name=\"sb_number\"" + crlf);
+                                        request.writeBytes(crlf);
+                                        request.writeBytes(sb_number + crlf);
+                                        //이거는 진짜 심하다...
+
+
+                                        // 마지막에 닫어줘야한다 // 끝태그
+                                        request.writeBytes(twoHyphens + boundary);
+
+                                        if (httpUrlConnection.getResponseCode() == 200) {
+                                            // Success
+                                            BufferedReader in =
+                                                    new BufferedReader(
+                                                            new InputStreamReader(
+                                                                    httpUrlConnection.getInputStream()));
+                                            StringBuffer buffer = new StringBuffer();
+                                            String temp = null;
+                                            while((temp = in.readLine())!=null)
+                                                buffer.append(temp);
+
+                                            Gson gson = new Gson();
+                                            final String result = gson.fromJson(buffer.toString(), String.class);
+
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if(result.equals("0")){
+                                                        Toast.makeText(getApplicationContext(), "리뷰 등록 실패", Toast.LENGTH_SHORT).show();
+                                                    }else{
+                                                        Toast.makeText(getApplicationContext(), "리뷰 등록 성공.", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+                                            in.close();
+                                        }
+
+                                    }catch(Exception e){
+                                        e.printStackTrace();
+                                    }
+
+                                }
+
+                            });
+                        }
                     }
                 });
+
                 dig.setNegativeButton("취소", null);
                 dig.show();
             }
+
+
         });
-
-
-        btn_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"메뉴보기",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-
 
 
 
@@ -180,7 +349,7 @@ public class StoreActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             URL endPoint =
-                                    new URL(ip+":8080/OurMeal/m_storePage/reviewAdd");
+                                    new URL(ip+"/OurMeal/m_storePage/reviewAdd");
                             HttpURLConnection myConnection =
                                     (HttpURLConnection) endPoint.openConnection();
 
@@ -192,7 +361,6 @@ public class StoreActivity extends AppCompatActivity {
                             Log.d(LOG_TAG,strNum);
                             final String num = "num="+strNum;
                             String store_code = "&store_code="+store.getStore_code();
-
 
                             // 출력 스트림을 사용할 것이다.
                             myConnection.setDoOutput(true);
@@ -279,19 +447,8 @@ public class StoreActivity extends AppCompatActivity {
                 });
 
 
-
-
-
-
-
-
-
-
-
             }
         });
-
-
 
     }
 
@@ -300,7 +457,6 @@ public class StoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store);
         initRefs();
-
 
         // Add code to print out the key hash
         try {
@@ -328,43 +484,21 @@ public class StoreActivity extends AppCompatActivity {
         if(permission_internet == PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.INTERNET},12);
 
-
         }
-
-
-
-      /* MapView mapView = new MapView(this);
-       ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
-       mapViewContainer.addView(mapView);*/
 
 
         mRecyclerView = findViewById(R.id.recycler_view);
         mLayoutManager = new LinearLayoutManager(this) {
         };
 
-
-
-
-
-
-        String testSc = "store_code=S18121800002";
+        String testSc = "store_code=S18122500001";
         sc.compareTo(testSc);
 
         Log.d(LOG_TAG,sc);
 
         connected_db();
-
-
-
         ArrayList<Food_menu>menu = (ArrayList<Food_menu>) map.get("menu_list");
-
         setEvents();
-
-
-
-
-
-
 
     }
 
@@ -376,15 +510,9 @@ public class StoreActivity extends AppCompatActivity {
             @Override
 
             public void run() {
-
-
-
-
                 try {
-
-
                     URL endPoint =
-                            new URL(ip+":8080/OurMeal/m_storePage?"+"store_code=S18121800002");
+                            new URL(ip+"/OurMeal/m_storePage?"+"store_code=S18122500001");
                     HttpURLConnection myConnection =
                             (HttpURLConnection) endPoint.openConnection();
                     //myConnection.setRequestMethod("GET");
@@ -402,17 +530,8 @@ public class StoreActivity extends AppCompatActivity {
                             buffer.append(temp);
 
                         Log.d(LOG_TAG,buffer.toString());
-
-
-
                         Gson gson = new Gson();
-
-
-
                         JSONObject json = new JSONObject(buffer.toString());
-
-
-
                         String json_store = json.getJSONObject("store").toString();
 
                         // 가게 정보 담기
@@ -454,10 +573,6 @@ public class StoreActivity extends AppCompatActivity {
                             imageList.add(sb);
                         }
 
-
-
-
-
                         map.put("imageList",imageList);
                         map.put("list",list);
                         // 메뉴 리스트에 내용 담기
@@ -486,18 +601,9 @@ public class StoreActivity extends AppCompatActivity {
                         Log.d(LOG_TAG,"avg : " + store.getScore_avg());
                         Log.d(LOG_TAG,"review_count : " + store.getStore_reviewCount());
 
-
-
-
-
                         in.close();
 
                         ArrayList<String> data = new ArrayList<>(); //이미지 url를 저장하는 arraylist
-
-
-
-
-
 
                         // 맨 위에 이미지
                         runOnUiThread(new Runnable() {
@@ -510,7 +616,7 @@ public class StoreActivity extends AppCompatActivity {
 
                                     if(!imageList.get(i).getSb_image().trim().equals("")) {
                                         Log.d(LOG_TAG,"image " + "(" + i + ")" + imageList.get(i).getSb_image());
-                                        String str_imgPath = ip+":8080/OurMeal/"+imageList.get(i).getSb_image();
+                                        String str_imgPath = ip+"/OurMeal/"+imageList.get(i).getSb_image();
 
                                         // Glide.with(getApplicationContext()).load("http://192.168.25.183:8080/OurMeal/"+list.get(i).getSb_image()).into(imageView1);
 
@@ -551,9 +657,6 @@ public class StoreActivity extends AppCompatActivity {
 
                                 }
 
-
-
-
                             }
                         });
 /*
@@ -565,11 +668,7 @@ public class StoreActivity extends AppCompatActivity {
                     autoViewPager.setAdapter(scrollAdapter); //Auto Viewpager에 Adapter 장착
                     autoViewPager.setInterval(4000); // 페이지 넘어갈 시간 간격 설정
                     autoViewPager.startAutoScroll(); //Auto Scroll 시작*/
-
-
-
-
-                   /*
+           /*
                     for(int i = 0; i < list.size(); i++){
                         Log.d(LOG_TAG,"list ("+ (i+1) +") ID : " + list.get(i).getMember_id()  );
                         Log.d(LOG_TAG,"list ("+ (i+1) +") CONTENT : " + list.get(i).getSb_content()  );
@@ -586,15 +685,6 @@ public class StoreActivity extends AppCompatActivity {
                     }
 
                     Log.d(LOG_TAG,"store_title : " + store.getStore_title());*/
-
-
-
-
-
-
-
-
-
 
                     /*
                     JsonArray jsonArray = jsonObject.getAsJsonArray("e");
@@ -630,42 +720,19 @@ public class StoreActivity extends AppCompatActivity {
 
         });
 
-//
-
-
-
 
     }
 
 
-    private static final class CustomLinearLayoutManager extends LinearLayoutManager{
-
-        private boolean isEnabledVerticalScrolling = false;
-
-        public CustomLinearLayoutManager(Context context) {
-            super(context);
-        }
-
-        public CustomLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
-            super(context, orientation, reverseLayout);
-        }
-
-        public CustomLinearLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-            super(context, attrs, defStyleAttr, defStyleRes);
-        }
-
-        public void setEnabledVerticalScrolling(boolean b){
-            isEnabledVerticalScrolling = b;
-        }
-
-        @Override
-        public boolean canScrollVertically() {
-            return isEnabledVerticalScrolling && super.canScrollVertically();
-        }
+    // 파일명 찾기
+    private String getName(Uri uri)
+    {
+        String[] projection = { MediaStore.Images.ImageColumns.DISPLAY_NAME };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DISPLAY_NAME);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
-
-
-
-
 }
 
