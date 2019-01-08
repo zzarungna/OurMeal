@@ -205,8 +205,18 @@ public class StoreActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                        if(!profile_check){
+                            Toast.makeText(getApplicationContext(), "이미지를 첨부해 주세요!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         final EditText review = (EditText)dialogView.findViewById(R.id.review_text);
                         final RatingBar rb = (RatingBar)dialogView.findViewById(R.id.start_score);
+
+                        if(review.getText().toString().trim().length() == 0){
+                            Toast.makeText(getApplicationContext(), "리뷰 내용을 작성해 주세요!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         //String msg = "입력된 리뷰 : " + review.getText();
                         if(profile_check){
                             //웹서버에 리뷰 등록
@@ -235,8 +245,8 @@ public class StoreActivity extends AppCompatActivity {
                                         httpUrlConnection.setDoInput(true);
                                         httpUrlConnection.setRequestMethod("POST");
 
-                                        final String id = "TEST01";
-                                        final String store_code = "S18122500001";
+                                        final String id = "user";
+                                        final String store_code = "S19010800001";
                                         final String content = review.getText().toString();
                                         final String sb_number = String.valueOf(rb.getRating());
                                         Log.d("아이유", String.valueOf(sb_number));
@@ -312,6 +322,7 @@ public class StoreActivity extends AppCompatActivity {
                                                         Toast.makeText(getApplicationContext(), "리뷰 등록 실패", Toast.LENGTH_SHORT).show();
                                                     }else{
                                                         Toast.makeText(getApplicationContext(), "리뷰 등록 성공.", Toast.LENGTH_SHORT).show();
+                                                        main_refresh();
                                                     }
                                                 }
                                             });
@@ -331,7 +342,9 @@ public class StoreActivity extends AppCompatActivity {
 
                 dig.setNegativeButton("취소", null);
                 dig.show();
+
             }
+
 
 
         });
@@ -491,7 +504,7 @@ public class StoreActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this) {
         };
 
-        String testSc = "store_code=S18122500001";
+        String testSc = "store_code=S19010800001";
         sc.compareTo(testSc);
 
         Log.d(LOG_TAG,sc);
@@ -512,7 +525,7 @@ public class StoreActivity extends AppCompatActivity {
             public void run() {
                 try {
                     URL endPoint =
-                            new URL(ip+"/OurMeal/m_storePage?"+"store_code=S18122500001");
+                            new URL(ip+"/OurMeal/m_storePage?"+"store_code=S19010800001");
                     HttpURLConnection myConnection =
                             (HttpURLConnection) endPoint.openConnection();
                     //myConnection.setRequestMethod("GET");
@@ -723,6 +736,12 @@ public class StoreActivity extends AppCompatActivity {
 
     }
 
+    //액티비티 새로고침
+    private void main_refresh(){
+        Intent main_intent = getIntent();
+        finish();
+        startActivity(main_intent);
+    }
 
     // 파일명 찾기
     private String getName(Uri uri)

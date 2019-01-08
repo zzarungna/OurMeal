@@ -60,7 +60,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             ReviewHolder reviewHolder = (ReviewHolder) holder;
 
-            mGlideRequestManager.load("http://172.30.1.11:8080/OurMeal/"+reviewList.get(position).getSb_image()).into(reviewHolder.sb_image);
+            mGlideRequestManager.load("http://192.168.0.17:8080/OurMeal/"+reviewList.get(position).getSb_image()).into(reviewHolder.sb_image);
 
 
 
@@ -91,7 +91,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if ((reviewList.get(position).getMember_image()).trim().equals(""))
             reviewHolder.member_image.setImageResource(R.drawable.st);
             else
-            mGlideRequestManager.load("http:// 172.30.1.11:8080/OurMeal/"+reviewList.get(position).getMember_image()).into(reviewHolder.member_image);
+            mGlideRequestManager.load("http://192.168.0.17:8080/OurMeal/"+reviewList.get(position).getMember_image()).into(reviewHolder.member_image);
 
 
             reviewHolder.sb_u_date.setText(reviewList.get(position).getSb_u_date());
