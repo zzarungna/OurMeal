@@ -102,7 +102,7 @@ public class RegistActivity  extends AppCompatActivity {
                 daum_webView.setWebChromeClient(new WebChromeClient());
 
                 // webview url load. jsp 파일 주소
-                daum_webView.loadUrl("http://192.168.0.11:8080/OurMeal/m_juso");
+                daum_webView.loadUrl("http://172.30.1.2:8080/OurMeal/m_juso");
 
                 dialog.setContentView(address);
                 dialog.setTitle("주소 검색");
@@ -249,9 +249,9 @@ public class RegistActivity  extends AppCompatActivity {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    daum_result.setText(String.format("(%s) %s %s", arg1, arg2, arg3));
-                    member_address_01.setText(String.format("(%s)", arg1));
-                    member_address_02.setText(String.format("%s %s", arg2, arg3));
+                    daum_result.setText(String.format("%s %s (%s)", arg1, arg2, arg3));
+                    member_address_01.setText(String.format("%s", arg1));
+                    member_address_02.setText(String.format("%s (%s)", arg2, arg3));
                     // WebView를 초기화 하지않으면 재사용할 수 없음
                 }
             });
