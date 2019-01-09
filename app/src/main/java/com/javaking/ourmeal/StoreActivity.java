@@ -24,9 +24,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Base64;
 import android.util.Log;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -44,6 +46,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.google.gson.Gson;
 
+import com.google.gson.reflect.TypeToken;
 import com.javaking.ourmeal.model.Food_menu;
 import com.javaking.ourmeal.model.Star_bulletin;
 import com.javaking.ourmeal.model.Store;
@@ -51,6 +54,7 @@ import com.javaking.ourmeal.model.Store;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -66,6 +70,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class StoreActivity extends AppCompatActivity {
@@ -182,6 +187,129 @@ public class StoreActivity extends AppCompatActivity {
 
     public void setEvents() {
 
+        //메뉴정보 확인 다이얼로그 시작.
+        btn_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View menuDialogView = (View)View.inflate(StoreActivity.this, R.layout.menu_information, null);
+                AlertDialog.Builder menudig = new AlertDialog.Builder(StoreActivity.this);
+
+                menudig.setView(menuDialogView);
+
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            URL endPoint = new URL(ip + "/OurMeal/m/menuInfo"); //집
+
+                            HttpURLConnection myConnection =
+                                    (HttpURLConnection) endPoint.openConnection();
+                            myConnection.setRequestMethod("POST");
+
+                            final String id = "user";
+                            final String store_code = "S19010800001";
+
+                            final String requestParam = String.format("id=%s&store_code=%s", id,store_code);
+
+                            myConnection.setDoOutput(true);
+                            myConnection.getOutputStream().write(requestParam.getBytes());
+
+                            if (myConnection.getResponseCode() == 200) {
+                                // Success
+                                BufferedReader in =
+                                        new BufferedReader(
+                                                new InputStreamReader(
+                                                        myConnection.getInputStream()));
+                                StringBuffer buffer = new StringBuffer();
+                                String temp = null;
+                                while((temp = in.readLine())!=null)
+                                    buffer.append(temp);
+
+                                Gson gson = new Gson();
+                                final List<Food_menu> food_menulist = gson.fromJson(buffer.toString(), new TypeToken<List<Food_menu>>(){}.getType());
+
+                                Log.d("아이유", food_menulist.get(1).getFm_allergy());
+                                TextView menu_name = menuDialogView.findViewById(R.id.menu_name);
+                                TextView menu_infor = menuDialogView.findViewById(R.id.menu_infor);
+                                TextView menu_price = menuDialogView.findViewById(R.id.menu_price);
+                                TextView menu_allergy = menuDialogView.findViewById(R.id.menu_allergy);
+                                TextView menu_kcal = menuDialogView.findViewById(R.id.menu_kcal);
+
+                                if(food_menulist==null){
+                                    menu_name.setText("등록된 메뉴 정보가 없습니다.");
+                                }else{
+                                    menu_name.setText(food_menulist.get(0).getFm_name());
+                                    menu_infor.setText(food_menulist.get(0).getFm_info());
+                                    menu_price.setText(food_menulist.get(0).getFm_price()+"원");
+                                    menu_allergy.setText(food_menulist.get(0).getFm_allergy());
+                                    menu_kcal.setText(food_menulist.get(0).getFm_kcal()+"㎉");
+                                }
+
+                                Log.d("아이유", ip+ "/OurMeal" + food_menulist.get(0).getFm_image());
+
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ImageView menu_image = menuDialogView.findViewById(R.id.menu_image);
+                                        Glide.with(getApplicationContext()).load(ip+ "/OurMeal"+food_menulist.get(0).getFm_image()).into(menu_image);
+
+                                        if(food_menulist.size()!=0){
+                                            LinearLayout mainlayout = (LinearLayout)menuDialogView.findViewById(R.id.menu_layout);
+
+                                            for(int i = 1; i<food_menulist.size(); i++){
+                                                LinearLayout dynamicView = (LinearLayout)View.inflate(StoreActivity.this, R.layout.menu_information, null);
+
+                                                ImageView sub_menu_image = dynamicView.findViewById(R.id.menu_image);
+                                                TextView sub_menu_name = dynamicView.findViewById(R.id.menu_name);
+                                                TextView sub_menu_infor = dynamicView.findViewById(R.id.menu_infor);
+                                                TextView sub_menu_price = dynamicView.findViewById(R.id.menu_price);
+                                                TextView sub_menu_allergy = dynamicView.findViewById(R.id.menu_allergy);
+                                                TextView sub_menu_kcal = dynamicView.findViewById(R.id.menu_kcal);
+
+                                                sub_menu_name.setText(food_menulist.get(i).getFm_name());
+                                                sub_menu_infor.setText(food_menulist.get(i).getFm_info());
+                                                sub_menu_price.setText(food_menulist.get(i).getFm_price()+"원");
+                                                sub_menu_allergy.setText(food_menulist.get(i).getFm_allergy());
+                                                sub_menu_kcal.setText(food_menulist.get(i).getFm_kcal()+"㎉");
+                                                Glide.with(getApplicationContext()).load(ip+ "/OurMeal"+food_menulist.get(i).getFm_image()).into(sub_menu_image);
+
+                                                mainlayout.addView(dynamicView);
+                                            }
+                                        }
+                                    }
+                                });
+                                in.close();
+                            } else {
+                                // Error
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패1", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                        } catch (Exception e) {
+                            Log.d(LOG_TAG, e.getMessage());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패2", Toast.LENGTH_SHORT).show();
+                                    TextView menu_name = menuDialogView.findViewById(R.id.menu_name);
+                                    menu_name.setText("등록된 메뉴 정보가 없습니다.");
+                                }
+                            });
+                        }
+                    }
+                });
+
+                menudig.setNegativeButton("확인", null);
+                menudig.show();
+            }
+        });
+
+        //리뷰 등록 시작 다이얼로그 > 파일 선택 작성 정보 인서트 및 파일 업로드 완료. 프로필 이미지 뜨는거 모두 확인함.
         btn_review.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,7 +329,7 @@ public class StoreActivity extends AppCompatActivity {
                     }
                 });
 
-                dig.setPositiveButton("리뷰작성", new DialogInterface.OnClickListener() {
+                dig.setPositiveButton("리뷰 등록", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
