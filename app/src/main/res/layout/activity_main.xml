@@ -27,6 +27,7 @@ android:background="@android:color/white">
             android:layout_height="50dp"
             android:layout_weight="1"
             android:ems="10"
+            android:focusableInTouchMode="false"
             android:hint="검색할 단어를 입력하세요."
             android:inputType="textPersonName" />
 
@@ -65,7 +66,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food2" />
+                        android:src="@drawable/food_a" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -107,7 +108,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food3" />
+                        android:src="@drawable/food_b" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -149,7 +150,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food1" />
+                        android:src="@drawable/food_c" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -244,7 +245,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food4" />
+                        android:src="@drawable/food_d" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -285,7 +286,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food5" />
+                        android:src="@drawable/food_e" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -326,7 +327,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food6" />
+                        android:src="@drawable/food_f" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -365,7 +366,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food7" />
+                        android:src="@drawable/food_g" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -406,7 +407,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food8" />
+                        android:src="@drawable/food_h" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -447,7 +448,7 @@ android:background="@android:color/white">
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/food9" />
+                        android:src="@drawable/food_i" />
 
                     <LinearLayout
                         android:layout_width="match_parent"

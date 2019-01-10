@@ -2,67 +2,90 @@ package com.javaking.ourmeal;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.widget.SlidingPaneLayout;
+import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.javaking.ourmeal.model.S_Store;
+import com.javaking.ourmeal.model.Store;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
-    Toolbar toolBar;
-    SearchView main_search;
-    EditText str_main_search;
+    private static final String IP = "http://192.168.0.17:8080"; //집
+    private static String LOG_TAG = "아이유";
 
+    Boolean search_status;
+    Toolbar toolBar;
+    EditText str_main_search;
     View dialogView;
 
+    //검색 결과
+    ArrayList<S_Store> search_store_list = new ArrayList<>();
+
+    //검색어
+    String search_result = null;
     public void initRefs() {
         toolBar = (Toolbar) findViewById(R.id.toolBar);
-        main_search = toolBar.findViewById(R.id.main_search);
         str_main_search = findViewById(R.id.str_main_search);
-
+        search_status = false;
     }
 
     public void setEvents() {
-        /*main_search.setOnSearchClickListener(new View.OnClickListener() {
+
+        str_main_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String msg = str_main_search.getText().toString();
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                //첫화면 검색 포커스를 없앤후 클릭시 포커스 활성
+                str_main_search.setFocusableInTouchMode(true);
             }
-        });*/
+        });
+
+        //엔터키 검색
+        str_main_search.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    search_result = str_main_search.getText().toString();
+                    Toast.makeText(getApplicationContext(),"엔터 검색어 : " + search_result, Toast.LENGTH_SHORT).show();
+
+                    //검색 메소드 실행//검색 테스트용 이유저
+                    String test = "이유저";
+                    searchSelect(test);
+                }
+                return false;
+            }
+        });
+
     }
 
-// 툴바 생성 메소드 & 툴바 검색 기능 사용
+    // 툴바 생성 메소드 & 툴바 검색 기능 사용
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        /*SearchView main_search = (SearchView)menu.findItem(R.id.main_search).getActionView();
-        main_search.setMaxWidth(Integer.MAX_VALUE);
-        main_search.setQueryHint("모델명으로 검색합니다.");
-        MenuItem item_like = menu.add(0,0,0,"히든 메뉴");
-        item_like.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return true;
-            }
-        });*/
         return  true;
     }
-// 툴바 메뉴&검색 사용 메소드
+    // 툴바 메뉴&검색 사용 메소드
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        /*int id = item.getItemId();
-        if (id == R.id.main_search) {
-            return true;
-        }*/
         Intent intent;
         switch (item.getItemId()){
             case R.id.menu_login:
@@ -114,6 +137,13 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(getApplicationContext(), ArticleActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.main_search:
+                search_result = str_main_search.getText().toString();
+
+                //검색 메소드 실행//검색 테스트용 이유저
+                String test = "이유저";
+                searchSelect(test);
+                break;
         }
         return true;
     }
@@ -126,6 +156,81 @@ public class MainActivity extends AppCompatActivity {
         setEvents();
         setSupportActionBar(toolBar);
 
+
     }
+
+    //검색 웹서버 통신 메소드
+    private void searchSelect(final String search_Text){
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL endPoint = new URL(IP + "/OurMeal/m/search");
+
+                    HttpURLConnection myConnection =
+                            (HttpURLConnection) endPoint.openConnection();
+                    myConnection.setRequestMethod("POST");
+
+                    final String requestParam = String.format("search=%s", search_Text);
+
+                    myConnection.setDoOutput(true);
+                    myConnection.getOutputStream().write(requestParam.getBytes());
+
+                    if (myConnection.getResponseCode() == 200) {
+                        // Success
+                        BufferedReader in =
+                                new BufferedReader(
+                                        new InputStreamReader(
+                                                myConnection.getInputStream()));
+                        StringBuffer buffer = new StringBuffer();
+                        String temp = null;
+                        while((temp = in.readLine())!=null)
+                            buffer.append(temp);
+
+                        Gson gson = new Gson();
+                        search_store_list = gson.fromJson(buffer.toString(), new TypeToken<ArrayList<S_Store>>(){}.getType());
+
+
+                        if(search_store_list!=null){
+                            search_status = true;
+                        }
+
+                        in.close();
+                    } else {
+                        // Error
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패1", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                } catch (Exception e) {
+                    Log.d(LOG_TAG, e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패2", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+
+        if(search_status){
+            //여기서 검색 결과 레이아웃으로 이동
+            Intent search_intent = new Intent(getApplicationContext(), SearchActivity.class);
+            Log.d("아이유", String.valueOf(search_store_list.size()));
+
+            //검색어 전달등 마무리하면 끝날듯.
+            search_intent.putExtra("search", search_result);
+            search_intent.putExtra("list", search_store_list);
+
+            startActivity(search_intent);
+        }
+    }
+
+
 
 }
