@@ -2,6 +2,7 @@ package com.javaking.ourmeal;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -15,6 +16,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class RegistActivity  extends AppCompatActivity {
 
@@ -103,7 +107,7 @@ public class RegistActivity  extends AppCompatActivity {
 
                 // webview url load. jsp 파일 주소
                 daum_webView.loadUrl("http://172.30.1.2:8080/OurMeal/m_juso");
-
+                // daum_webView.loadUrl("http://192.168.0.11:8080/OurMeal/m_juso");
                 dialog.setContentView(address);
                 dialog.setTitle("주소 검색");
                 dialog.show();
@@ -118,7 +122,7 @@ public class RegistActivity  extends AppCompatActivity {
         });
 
         btn_submit.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 String id = member_id.getText().toString().trim();
                 if (id.length() == 0) {
                     Toast.makeText(getApplicationContext(),
@@ -142,7 +146,7 @@ public class RegistActivity  extends AppCompatActivity {
                 }
 
                 String password2 = member_pw2.getText().toString().trim();
-                if( password2.length() != password1.length() ) {
+                if( !password2.equals(password1)) {
                     Toast.makeText(getApplicationContext(),
                             "패스워드가 일치하지 않습니다.",
                             Toast.LENGTH_SHORT).show();
@@ -228,6 +232,42 @@ public class RegistActivity  extends AppCompatActivity {
                 } else {
                     member_email_error.setText("");
                 }
+
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // URL url = new URL("http://172.30.1.2:8080/OurMeal/m_regist");
+                            URL url = new URL("http://192.168.0.11:8080/OurMeal/m_regist");
+                            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                            httpURLConnection.setDoOutput(true);
+                            httpURLConnection.setDoInput(true);
+                            httpURLConnection.setRequestMethod("POST");
+                            String id = "member_id=" + member_id.getText().toString();
+                            String pw1 = "&member_pw=" + member_pw1.getText().toString();
+                            String name = "&member_name=" + member_name.getText().toString();
+                            String birth = "&member_birth=" + member_birth.getText().toString();
+                            String phone = "&member_phone=" + member_phone.getText().toString();
+                            String address = "&member_address=" + member_address_02.getText().toString();
+                            // member_address_02.getText().toString();
+                            // member_address_03.getText().toString();
+                            String email = "&member_email=" + member_email.getText().toString();
+
+                            httpURLConnection.getOutputStream().write(id.getBytes());
+                            httpURLConnection.getOutputStream().write(pw1.getBytes());
+                            httpURLConnection.getOutputStream().write(name.getBytes());
+                            httpURLConnection.getOutputStream().write(birth.getBytes());
+                            httpURLConnection.getOutputStream().write(phone.getBytes());
+                            httpURLConnection.getOutputStream().write(address.getBytes());
+                            httpURLConnection.getOutputStream().write(email.getBytes());
+
+                            httpURLConnection.getResponseCode();
+                            // String a = String.format("member_id=%s&member_pw=%s",member_id.getText().toString())
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
             }
         });
     }
