@@ -237,8 +237,8 @@ public class RegistActivity  extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            // URL url = new URL("http://172.30.1.2:8080/OurMeal/m_regist");
-                            URL url = new URL("http://192.168.0.11:8080/OurMeal/m_regist");
+                            URL url = new URL("http://172.30.1.2:8080/OurMeal/m_regist");
+                            // URL url = new URL("http://192.168.0.11:8080/OurMeal/m_regist");
                             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                             httpURLConnection.setDoOutput(true);
                             httpURLConnection.setDoInput(true);
@@ -248,9 +248,9 @@ public class RegistActivity  extends AppCompatActivity {
                             String name = "&member_name=" + member_name.getText().toString();
                             String birth = "&member_birth=" + member_birth.getText().toString();
                             String phone = "&member_phone=" + member_phone.getText().toString();
-                            String address = "&member_address=" + member_address_02.getText().toString();
-                            // member_address_02.getText().toString();
-                            // member_address_03.getText().toString();
+                            String address = "&member_address=" + member_address_01.getText().toString() +
+                                    " " + member_address_02.getText().toString() +
+                                    " " + member_address_03.getText().toString();
                             String email = "&member_email=" + member_email.getText().toString();
 
                             httpURLConnection.getOutputStream().write(id.getBytes());
