@@ -33,20 +33,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String IP = "http://192.168.0.17:8080"; //집
     private static String LOG_TAG = "아이유";
 
-    Boolean search_status;
     Toolbar toolBar;
-    EditText str_main_search;
     View dialogView;
 
-    //검색 결과
+    EditText str_main_search;
     ArrayList<S_Store> search_store_list = new ArrayList<>();
+    String search_result;
 
-    //검색어
-    String search_result = null;
     public void initRefs() {
         toolBar = (Toolbar) findViewById(R.id.toolBar);
         str_main_search = findViewById(R.id.str_main_search);
-        search_status = false;
+        search_result = str_main_search.getText().toString();
     }
 
     public void setEvents() {
@@ -64,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
-                    search_result = str_main_search.getText().toString();
-                    Toast.makeText(getApplicationContext(),"엔터 검색어 : " + search_result, Toast.LENGTH_SHORT).show();
 
                     //검색 메소드 실행//검색 테스트용 이유저
                     String test = "이유저";
@@ -122,21 +117,25 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(getApplicationContext(), MyPageActivity.class);
                 startActivity(intent);
                 break;
+            /*
             case R.id.menu_partner:
                 Toast.makeText(this, "파트너신청", Toast.LENGTH_LONG).show();
                 intent = new Intent(getApplicationContext(), PartnerActivity.class);
                 startActivity(intent);
                 break;
+
             case R.id.menu_store:
                 Toast.makeText(this, "스토어", Toast.LENGTH_LONG).show();
                 intent = new Intent(getApplicationContext(), StoreActivity.class);
                 startActivity(intent);
                 break;
+
             case R.id.menu_article:
                 Toast.makeText(this, "게시판", Toast.LENGTH_LONG).show();
                 intent = new Intent(getApplicationContext(), ArticleActivity.class);
                 startActivity(intent);
                 break;
+                */
             case R.id.main_search:
                 search_result = str_main_search.getText().toString();
 
@@ -192,7 +191,26 @@ public class MainActivity extends AppCompatActivity {
 
 
                         if(search_store_list!=null){
-                            search_status = true;
+                            //검색 결과
+                            String search_text = str_main_search.getText().toString();
+
+                            //여기서 검색 결과 레이아웃으로 이동
+                            Intent search_intent = new Intent(getApplicationContext(), SearchActivity.class);
+                            Log.d("아이유", String.valueOf(search_store_list.size()));
+
+                            //인텐트로 값전달
+                            search_intent.putExtra("search", search_text);
+                            search_intent.putExtra("list", search_store_list);
+
+                            startActivity(search_intent);
+
+                        }else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), search_Text+"에 대한 검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
 
                         in.close();
@@ -218,17 +236,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if(search_status){
-            //여기서 검색 결과 레이아웃으로 이동
-            Intent search_intent = new Intent(getApplicationContext(), SearchActivity.class);
-            Log.d("아이유", String.valueOf(search_store_list.size()));
 
-            //검색어 전달등 마무리하면 끝날듯.
-            search_intent.putExtra("search", search_result);
-            search_intent.putExtra("list", search_store_list);
-
-            startActivity(search_intent);
-        }
     }
 
 

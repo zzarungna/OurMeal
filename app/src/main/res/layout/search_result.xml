@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ScrollView
@@ -8,65 +11,83 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/search_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            >
 
-            <TextView
-                android:id="@+id/search_title"
+            <Button
+                android:id="@+id/main_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+                android:background="@color/colorAccent"
+                android:text="OurMeal Home" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="360dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <ImageButton
-                    android:id="@+id/serach_result_img"
+                <TextView
+                    android:id="@+id/search_title"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:src="@drawable/no_image" />
+                    android:layout_height="wrap_content"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/serach_result_title"
+                    <ImageButton
+                        android:id="@+id/serach_result_img"
                         android:layout_width="match_parent"
-                        android:layout_height="66dp"
-                        android:text="가게 이름"
-                        android:textSize="20sp" />
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:layout_weight="1"
+                        android:src="@drawable/no_image" />
 
-                    <TextView
-                        android:id="@+id/serach_result_num"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:text="평점"
-                        android:textSize="20sp" />
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/serach_result_addr"
-                        android:layout_width="match_parent"
-                        android:layout_height="210dp"
-                        android:text="주소"
-                        android:textSize="20sp" />
+                        <TextView
+                            android:id="@+id/serach_result_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="39dp"
+                            android:text="가게 이름"
+                            android:textSize="20sp" />
 
-                    <TextView
-                        android:id="@+id/serach_result_rcount"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:hint="달린 리뷰 갯수"
-                        android:textSize="20sp" />
+                        <TextView
+                            android:id="@+id/serach_result_num"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:text="평점"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/serach_result_addr"
+                            android:layout_width="match_parent"
+                            android:layout_height="90dp"
+                            android:text="주소"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/serach_result_rcount"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:hint="달린 리뷰 갯수"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
                 </LinearLayout>
-
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

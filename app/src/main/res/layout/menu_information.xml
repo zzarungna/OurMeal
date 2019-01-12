@@ -1,65 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/css_border"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@drawable/line">
 
         <LinearLayout
             android:id="@+id/menu_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/line"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/menuTitle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@android:color/black"
+                android:text="메뉴 정보"
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp" />
 
             <ImageView
                 android:id="@+id/menu_image"
                 android:layout_width="match_parent"
-                android:layout_height="170dp"
+                android:layout_height="145dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/no_image" />
 
             <TextView
                 android:id="@+id/menu_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
-                android:textAlignment="inherit" />
+                android:paddingLeft="18dp"
+                android:text="dddd"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/menu_infor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
-                android:textAlignment="inherit" />
+                android:paddingLeft="18dp"
+                android:textAlignment="inherit"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/menu_price"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
-                android:textAlignment="inherit" />
+                android:paddingLeft="18dp"
+                android:textAlignment="inherit"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/menu_allergy"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
-                android:textAlignment="inherit" />
+                android:paddingLeft="18dp"
+                android:textAlignment="inherit"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/menu_kcal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
-                android:textAlignment="inherit" />
+                android:background="@drawable/line"
+                android:paddingLeft="18dp"
+                android:textAlignment="inherit"
+                android:textSize="24sp" />
 
         </LinearLayout>
     </ScrollView>

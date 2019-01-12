@@ -1,5 +1,6 @@
 package com.javaking.ourmeal;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -8,10 +9,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,8 +26,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.javaking.ourmeal.model.Health;
 import com.javaking.ourmeal.model.Member;
+import com.javaking.ourmeal.model.S_Store;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -34,21 +40,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MyPageActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "아이유";
     private static final String IP = "http://192.168.10.50:8080";//학원
-    //private static final String IP = "http://192.168.0.229:8080";//학원 맥
-    //나중에 집 추가
-
-    String image_path = null;
-    String image_name = null;
-
-    String profile_imgpath = "http://192.168.10.50:8080/OurMeal";
-    String profile_db_imagepath = null;
 
     Toolbar toolBar;
+    String image_path = null;
+    String image_name = null;
 
     // 개인 정보 수정
     LinearLayout layout_mb_dataupdate;
@@ -83,7 +84,8 @@ public class MyPageActivity extends AppCompatActivity {
 
     public void initRefs() {
 
-
+        //상단바
+        toolBar = (Toolbar) findViewById(R.id.toolBar_mypage);
 
         // 개인 정보 수정btn_my_ok
         layout_mb_dataupdate = (LinearLayout)findViewById(R.id.layout_mb_dataupdate);
@@ -125,6 +127,16 @@ public class MyPageActivity extends AppCompatActivity {
     int num = 0;
 
     public void setEvents() {
+
+        //홈버튼 클릭
+        toolBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mainIntet = new Intent(getApplicationContext(), MainActivity.class);
+                finish();
+                startActivity(mainIntet);
+            }
+        });
 
         //취소 버튼
         btn_my_cancel.setOnClickListener(new View.OnClickListener() {
@@ -400,7 +412,7 @@ public class MyPageActivity extends AppCompatActivity {
                                         public void run() {
                                             if(!result.equals("0")){
                                                 Toast.makeText(getApplicationContext(), "사진 등록 및 변경 성공", Toast.LENGTH_SHORT).show();
-                                                Glide.with(getApplicationContext()).load(profile_imgpath + result).into(image_mb);
+                                                Glide.with(getApplicationContext()).load(IP+"/OurMeal" + result).into(image_mb);
                                             }else{
                                                 Toast.makeText(getApplicationContext(), "사진 등록 및 변경 실패", Toast.LENGTH_SHORT).show();
                                             }
@@ -727,7 +739,7 @@ public class MyPageActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Glide.with(getApplicationContext()).load(profile_imgpath + result).into(image_mb);
+                                    Glide.with(getApplicationContext()).load(IP + "/OurMeal" + result).into(image_mb);
                                 }
                             });
                         }
@@ -843,6 +855,13 @@ public class MyPageActivity extends AppCompatActivity {
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    // 툴바 생성 메소드 & 툴바 검색 기능 사용
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sub_menu, menu);
+        return  true;
     }
 
 }

@@ -24,11 +24,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Base64;
 import android.util.Log;
 
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -77,9 +75,7 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    //private static final String ip = "http://192.168.10.50"; //학원 내 윈도우 PC
     private static final String ip = "http://192.168.0.17:8080"; //집
-    // 지도 화면 View
 
     RelativeLayout mapView;
     TextView store_title;
@@ -97,12 +93,19 @@ public class StoreActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
     Button btn_more;
-    
+
     Boolean profile_check;
     View dialogView;
+    View menuDialogView;
     ImageButton image_btn;
     String image_path = null;
     String image_name = null;
+
+    Button main_btn;
+
+    //다른데서 넘어온 스토어 코드값
+    String code = null;
+    TextView menuTitle;
 
     public RequestManager mGlideRequestManager;
 
@@ -124,6 +127,10 @@ public class StoreActivity extends AppCompatActivity {
         btn_more = findViewById(R.id.btn_more);
         mapView = findViewById(R.id.map_view);
         profile_check = false;
+        menuTitle = findViewById(R.id.menuTitle);
+
+        //상단 버튼
+        main_btn = findViewById(R.id.main_btn);
     }
 
     public int more_button(){
@@ -187,11 +194,22 @@ public class StoreActivity extends AppCompatActivity {
 
     public void setEvents() {
 
+        //홈버튼 클릭
+        main_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mainIntet = new Intent(getApplicationContext(), MainActivity.class);
+                finish();
+                startActivity(mainIntet);
+            }
+        });
+
+
         //메뉴정보 확인 다이얼로그 시작.
         btn_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final View menuDialogView = (View)View.inflate(StoreActivity.this, R.layout.menu_information, null);
+                menuDialogView = (View)View.inflate(StoreActivity.this, R.layout.menu_information, null);
                 AlertDialog.Builder menudig = new AlertDialog.Builder(StoreActivity.this);
 
                 menudig.setView(menuDialogView);
@@ -200,16 +218,16 @@ public class StoreActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            URL endPoint = new URL(ip + "/OurMeal/m/menuInfo"); //집
+                            URL endPoint = new URL(ip + "/OurMeal/m/menuInfo");
 
                             HttpURLConnection myConnection =
                                     (HttpURLConnection) endPoint.openConnection();
                             myConnection.setRequestMethod("POST");
 
                             final String id = "user";
-                            final String store_code = "S19010800001";
+                            //final String store_code = "S19010800001";
 
-                            final String requestParam = String.format("id=%s&store_code=%s", id,store_code);
+                            final String requestParam = String.format("id=%s&store_code=%s", id,code);
 
                             myConnection.setDoOutput(true);
                             myConnection.getOutputStream().write(requestParam.getBytes());
@@ -238,11 +256,11 @@ public class StoreActivity extends AppCompatActivity {
                                 if(food_menulist==null){
                                     menu_name.setText("등록된 메뉴 정보가 없습니다.");
                                 }else{
-                                    menu_name.setText(food_menulist.get(0).getFm_name());
-                                    menu_infor.setText(food_menulist.get(0).getFm_info());
-                                    menu_price.setText(food_menulist.get(0).getFm_price()+"원");
-                                    menu_allergy.setText(food_menulist.get(0).getFm_allergy());
-                                    menu_kcal.setText(food_menulist.get(0).getFm_kcal()+"㎉");
+                                    menu_name.setText("메뉴 이름 : " + food_menulist.get(0).getFm_name());
+                                    menu_infor.setText("메뉴 설명 : " + food_menulist.get(0).getFm_info());
+                                    menu_price.setText("가격 : " +food_menulist.get(0).getFm_price()+"원");
+                                    menu_allergy.setText("알레르기 : " + food_menulist.get(0).getFm_allergy());
+                                    menu_kcal.setText("열량 : " + food_menulist.get(0).getFm_kcal()+"㎉");
                                 }
 
                                 Log.d("아이유", ip+ "/OurMeal" + food_menulist.get(0).getFm_image());
@@ -266,12 +284,14 @@ public class StoreActivity extends AppCompatActivity {
                                                 TextView sub_menu_price = dynamicView.findViewById(R.id.menu_price);
                                                 TextView sub_menu_allergy = dynamicView.findViewById(R.id.menu_allergy);
                                                 TextView sub_menu_kcal = dynamicView.findViewById(R.id.menu_kcal);
+                                                TextView sub_menuTitle = dynamicView.findViewById(R.id.menuTitle);
 
-                                                sub_menu_name.setText(food_menulist.get(i).getFm_name());
-                                                sub_menu_infor.setText(food_menulist.get(i).getFm_info());
-                                                sub_menu_price.setText(food_menulist.get(i).getFm_price()+"원");
-                                                sub_menu_allergy.setText(food_menulist.get(i).getFm_allergy());
-                                                sub_menu_kcal.setText(food_menulist.get(i).getFm_kcal()+"㎉");
+                                                sub_menuTitle.setVisibility(View.INVISIBLE);
+                                                sub_menu_name.setText("메뉴 이름 : "+food_menulist.get(i).getFm_name());
+                                                sub_menu_infor.setText("메뉴 설명 : " +food_menulist.get(i).getFm_info());
+                                                sub_menu_price.setText("가격 : " + food_menulist.get(i).getFm_price()+"원");
+                                                sub_menu_allergy.setText("알레르기 : " + food_menulist.get(i).getFm_allergy());
+                                                sub_menu_kcal.setText("열량 : " + food_menulist.get(i).getFm_kcal()+"㎉");
                                                 Glide.with(getApplicationContext()).load(ip+ "/OurMeal"+food_menulist.get(i).getFm_image()).into(sub_menu_image);
 
                                                 mainlayout.addView(dynamicView);
@@ -296,6 +316,7 @@ public class StoreActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     //Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패2", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), "등록된 메뉴 정보가 없습니다.", Toast.LENGTH_SHORT).show();
                                     TextView menu_name = menuDialogView.findViewById(R.id.menu_name);
                                     menu_name.setText("등록된 메뉴 정보가 없습니다.");
                                 }
@@ -374,7 +395,7 @@ public class StoreActivity extends AppCompatActivity {
                                         httpUrlConnection.setRequestMethod("POST");
 
                                         final String id = "user";
-                                        final String store_code = "S19010800001";
+                                        //final String store_code = "S19010800001";
                                         final String content = review.getText().toString();
                                         final String sb_number = String.valueOf(rb.getRating());
                                         Log.d("아이유", String.valueOf(sb_number));
@@ -408,7 +429,7 @@ public class StoreActivity extends AppCompatActivity {
                                         request.writeBytes(twoHyphens + boundary + crlf);
                                         request.writeBytes("Content-Disposition: form-data; name=\"store_code\"" + crlf);
                                         request.writeBytes(crlf);
-                                        request.writeBytes(store_code + crlf);
+                                        request.writeBytes(code + crlf);
                                         //이거는 진짜 심하다...
 
                                         //18 좉같다 진짜 이거는...아오
@@ -501,7 +522,8 @@ public class StoreActivity extends AppCompatActivity {
 
                             Log.d(LOG_TAG,strNum);
                             final String num = "num="+strNum;
-                            String store_code = "&store_code="+store.getStore_code();
+                            //String store_code = "&store_code="+store.getStore_code();
+                            String store_code = "&store_code="+code;
 
                             // 출력 스트림을 사용할 것이다.
                             myConnection.setDoOutput(true);
@@ -599,6 +621,12 @@ public class StoreActivity extends AppCompatActivity {
         setContentView(R.layout.activity_store);
         initRefs();
 
+        //다른데서 넘오언 스토어 코드값.
+        Intent get_data = getIntent();
+        code = get_data.getStringExtra("store_code");
+
+        //Toast.makeText(getApplicationContext(), "스토어 코드 값." +code, Toast.LENGTH_SHORT).show();
+
         // Add code to print out the key hash
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -632,7 +660,8 @@ public class StoreActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this) {
         };
 
-        String testSc = "store_code=S19010800001";
+        //String testSc = "store_code=S19010800001";
+        String testSc = "store_code="+code;
         sc.compareTo(testSc);
 
         Log.d(LOG_TAG,sc);
@@ -653,7 +682,7 @@ public class StoreActivity extends AppCompatActivity {
             public void run() {
                 try {
                     URL endPoint =
-                            new URL(ip+"/OurMeal/m_storePage?"+"store_code=S19010800001");
+                            new URL(ip+"/OurMeal/m_storePage?"+"store_code="+code);
                     HttpURLConnection myConnection =
                             (HttpURLConnection) endPoint.openConnection();
                     //myConnection.setRequestMethod("GET");
