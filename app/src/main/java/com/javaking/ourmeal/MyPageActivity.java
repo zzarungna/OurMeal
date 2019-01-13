@@ -45,7 +45,7 @@ import java.util.ArrayList;
 public class MyPageActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "아이유";
-    private static final String IP = "http://192.168.10.50:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";
 
     Toolbar toolBar;
     String image_path = null;
@@ -81,6 +81,9 @@ public class MyPageActivity extends AppCompatActivity {
 
     //테스트 로그
     TextView testLog;
+
+    //회원 로그인 아이디 나중에 로그인한 값으로 대체하면된다.
+    String member_id = null;
 
     public void initRefs() {
 
@@ -121,7 +124,8 @@ public class MyPageActivity extends AppCompatActivity {
 
         testLog = (TextView)findViewById(R.id.textView_log);
 
-
+        //로그인한 회원 아이디는
+        member_id = "user3";
     }
 
     int num = 0;
@@ -202,18 +206,17 @@ public class MyPageActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                URL endPoint = new URL(IP + "/OurMeal/myPage/Health"); //집
+                                URL endPoint = new URL(IP + "/OurMeal/myPage/Health_Select");
 
                                 HttpURLConnection myConnection =
                                         (HttpURLConnection) endPoint.openConnection();
                                 myConnection.setRequestMethod("POST");
 
-                                /*
-                                String requestParam = String.format("id=%s", "TEST01");
+                                String requestParam = String.format("member_id=%s", member_id);
 
                                 myConnection.setDoOutput(true);
                                 myConnection.getOutputStream().write(requestParam.getBytes());
-                                */
+
                                 if (myConnection.getResponseCode() == 200) {
                                     // Success
                                     BufferedReader in =
@@ -229,13 +232,14 @@ public class MyPageActivity extends AppCompatActivity {
                                     final Health health = gson.fromJson(buffer.toString(), Health.class);
 
                                    if(health!=null){
-                                       str_mb_cm.setText("");
-                                       str_mb_cm.setHint(health.getHealth_height().toString());
-
-                                       str_mb_kg.setText("");
-                                       str_mb_kg.setHint(health.getHealth_weight().toString());
-
-                                       str_mb_kcal.setText(health.getHealth_basal().toString()+"㎉");
+                                       runOnUiThread(new Runnable() {
+                                           @Override
+                                           public void run() {
+                                               str_mb_cm.setHint(health.getHealth_height().toString());
+                                               str_mb_kg.setHint(health.getHealth_weight().toString());
+                                               str_mb_kcal.setText(health.getHealth_basal().toString()+"㎉");
+                                           }
+                                       });
                                    }
                                    in.close();
 
@@ -285,7 +289,11 @@ public class MyPageActivity extends AppCompatActivity {
 
                     HttpURLConnection myConnection =
                             (HttpURLConnection) endPoint.openConnection();
-                    //myConnection.setRequestMethod("GET");
+                    myConnection.setRequestMethod("POST");
+
+                    final String requestParam = String.format("member_id=%s", member_id);
+                    myConnection.setDoOutput(true);
+                    myConnection.getOutputStream().write(requestParam.getBytes());
 
                     if (myConnection.getResponseCode() == 200) {
                         // Success
@@ -389,6 +397,13 @@ public class MyPageActivity extends AppCompatActivity {
                                     request.writeBytes(crlf);
                                 }
 
+                                //18 좉같다 진짜 이거는...아오
+                                request.writeBytes(twoHyphens + boundary + crlf);
+                                request.writeBytes("Content-Disposition: form-data; name=\"member_id\"" + crlf);
+                                request.writeBytes(crlf);
+                                request.writeBytes(member_id + crlf);
+                                //이거는 진짜 심하다...
+
                                 // 마지막에 닫어줘야한다 // 끝태그
                                 request.writeBytes(twoHyphens + boundary);
 
@@ -451,7 +466,7 @@ public class MyPageActivity extends AppCompatActivity {
                                 final String email = str_mb_email.getText().toString();
                                 final String phone = str_mb_phone.getText().toString();
                                 final String birth = str_mb_happy.getText().toString();
-                                final String requestParam = String.format("name=%s&email=%s&phone=%s&birth=%s", name,email,phone,birth);
+                                final String requestParam = String.format("name=%s&email=%s&phone=%s&birth=%s&member_id=%s", name,email,phone,birth,member_id);
 
                                 myConnection.setDoOutput(true);
                                 myConnection.getOutputStream().write(requestParam.getBytes());
@@ -539,7 +554,7 @@ public class MyPageActivity extends AppCompatActivity {
                                 final String pw = str_mb_pw.getText().toString();
                                 final String pwre = str_mb_pwre.getText().toString();
 
-                                final String requestParam = String.format("realpw=%s&pw=%s&pwre=%s", realpw,pw,pwre);
+                                final String requestParam = String.format("realpw=%s&pw=%s&pwre=%s&member_id=%s", realpw,pw,pwre,member_id);
 
                                 myConnection.setDoOutput(true);
                                 myConnection.getOutputStream().write(requestParam.getBytes());
@@ -608,7 +623,7 @@ public class MyPageActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             try {
-                                URL endPoint = new URL(IP + "/OurMeal/myPage/Health");
+                                URL endPoint = new URL(IP + "/OurMeal/myPage/Health_IU");
 
                                 HttpURLConnection myConnection =
                                         (HttpURLConnection) endPoint.openConnection();
@@ -618,7 +633,7 @@ public class MyPageActivity extends AppCompatActivity {
                                 String cm = str_mb_cm.getText().toString();
                                 String kg = str_mb_kg.getText().toString();
 
-                                String requestParam = String.format("cm=%s&kg=%s", cm,kg);
+                                String requestParam = String.format("cm=%s&kg=%s&member_id=%s", cm,kg,member_id);
 
                                 myConnection.setDoOutput(true);
                                 myConnection.getOutputStream().write(requestParam.getBytes());
@@ -641,7 +656,7 @@ public class MyPageActivity extends AppCompatActivity {
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(getApplicationContext(), "키 몸무게 정보 등록 성공!", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getApplicationContext(), "키 몸무게 정보 등록 및 변경 성공!", Toast.LENGTH_SHORT).show();
                                                 str_mb_cm.setText("");
                                                 str_mb_kg.setText("");
                                                 str_mb_kcal.setText("");
@@ -714,9 +729,7 @@ public class MyPageActivity extends AppCompatActivity {
                             (HttpURLConnection) endPoint.openConnection();
                     myConnection.setRequestMethod("POST");
 
-                    String id = "TEST01";
-
-                    String requestParam = String.format("id=%s", id);
+                    String requestParam = String.format("member_id=%s", member_id);
 
                     myConnection.setDoOutput(true);
                     myConnection.getOutputStream().write(requestParam.getBytes());

@@ -75,7 +75,7 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String ip = "http://192.168.0.17:8080"; //집
+    private static final String ip = "http://192.168.0.17:8080";
 
     RelativeLayout mapView;
     TextView store_title;
@@ -104,7 +104,7 @@ public class StoreActivity extends AppCompatActivity {
     Button main_btn;
 
     //다른데서 넘어온 스토어 코드값
-    String code = null;
+    String getStorecode = null;
     TextView menuTitle;
 
     public RequestManager mGlideRequestManager;
@@ -227,7 +227,7 @@ public class StoreActivity extends AppCompatActivity {
                             final String id = "user";
                             //final String store_code = "S19010800001";
 
-                            final String requestParam = String.format("id=%s&store_code=%s", id,code);
+                            final String requestParam = String.format("id=%s&store_code=%s", id,getStorecode);
 
                             myConnection.setDoOutput(true);
                             myConnection.getOutputStream().write(requestParam.getBytes());
@@ -429,7 +429,7 @@ public class StoreActivity extends AppCompatActivity {
                                         request.writeBytes(twoHyphens + boundary + crlf);
                                         request.writeBytes("Content-Disposition: form-data; name=\"store_code\"" + crlf);
                                         request.writeBytes(crlf);
-                                        request.writeBytes(code + crlf);
+                                        request.writeBytes(getStorecode + crlf);
                                         //이거는 진짜 심하다...
 
                                         //18 좉같다 진짜 이거는...아오
@@ -523,7 +523,7 @@ public class StoreActivity extends AppCompatActivity {
                             Log.d(LOG_TAG,strNum);
                             final String num = "num="+strNum;
                             //String store_code = "&store_code="+store.getStore_code();
-                            String store_code = "&store_code="+code;
+                            String store_code = "&store_code="+getStorecode;
 
                             // 출력 스트림을 사용할 것이다.
                             myConnection.setDoOutput(true);
@@ -623,7 +623,7 @@ public class StoreActivity extends AppCompatActivity {
 
         //다른데서 넘오언 스토어 코드값.
         Intent get_data = getIntent();
-        code = get_data.getStringExtra("store_code");
+        getStorecode = get_data.getStringExtra("store_code");
 
         //Toast.makeText(getApplicationContext(), "스토어 코드 값." +code, Toast.LENGTH_SHORT).show();
 
@@ -661,7 +661,7 @@ public class StoreActivity extends AppCompatActivity {
         };
 
         //String testSc = "store_code=S19010800001";
-        String testSc = "store_code="+code;
+        String testSc = "store_code="+getStorecode;
         sc.compareTo(testSc);
 
         Log.d(LOG_TAG,sc);
@@ -682,7 +682,7 @@ public class StoreActivity extends AppCompatActivity {
             public void run() {
                 try {
                     URL endPoint =
-                            new URL(ip+"/OurMeal/m_storePage?"+"store_code="+code);
+                            new URL(ip+"/OurMeal/m_storePage?"+"store_code="+getStorecode);
                     HttpURLConnection myConnection =
                             (HttpURLConnection) endPoint.openConnection();
                     //myConnection.setRequestMethod("GET");
