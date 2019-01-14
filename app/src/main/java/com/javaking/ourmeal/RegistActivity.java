@@ -106,7 +106,7 @@ public class RegistActivity  extends AppCompatActivity {
                 daum_webView.setWebChromeClient(new WebChromeClient());
 
                 // webview url load. jsp 파일 주소
-                daum_webView.loadUrl("http://172.30.1.2:8080/OurMeal/m_juso");
+                daum_webView.loadUrl("http://172.30.1.26:8080/OurMeal/m_juso");
                 // daum_webView.loadUrl("http://192.168.0.11:8080/OurMeal/m_juso");
                 dialog.setContentView(address);
                 dialog.setTitle("주소 검색");
