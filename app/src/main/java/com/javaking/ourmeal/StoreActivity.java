@@ -75,7 +75,7 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String IP = "http://192.168.10.50:8080";
+    private static final String IP = "http://192.168.0.17:8080";//집
 
     //회원 로그인 아이디 나중에 로그인한 값으로 대체하면된다.
     String member_id = null;
@@ -252,7 +252,7 @@ public class StoreActivity extends AppCompatActivity {
                                 Gson gson = new Gson();
                                 final List<Food_menu> food_menulist = gson.fromJson(buffer.toString(), new TypeToken<List<Food_menu>>(){}.getType());
 
-                                Log.d("아이유", food_menulist.get(1).getFm_allergy());
+                                Log.d("아이유", String.valueOf(food_menulist.size()));
                                 TextView menu_name = menuDialogView.findViewById(R.id.menu_name);
                                 TextView menu_infor = menuDialogView.findViewById(R.id.menu_infor);
                                 TextView menu_price = menuDialogView.findViewById(R.id.menu_price);

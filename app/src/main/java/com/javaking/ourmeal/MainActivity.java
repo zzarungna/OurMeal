@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-//abcd
-    private static final String IP = "http://192.168.10.50:8080";
+    private static final String IP = "http://192.168.0.17:8080";//집
     private static String LOG_TAG = "아이유";
 
     String msg = "아이디를 입력하세요";
@@ -70,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
 
                     //검색 메소드 실행//검색 테스트용 이유저
-                    String test = "만리재로";
-                    searchSelect(test);
+                    String search_text = str_main_search.getText().toString();
+                    searchSelect(search_text);
                 }
                 return false;
             }
@@ -159,8 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
                                                 cookieString = cookieName + "=" + cookieValue;
                                                 CookieManager.getInstance().setCookie(IP+"/OurMeal", cookieString);
+                                                CookieManager.getInstance().setCookie("login_id", str_id.getText().toString());
                                             }
                                             Log.d(LOG_TAG, CookieManager.getInstance().getCookie(IP+"/OurMeal"));
+                                            Log.d(LOG_TAG, CookieManager.getInstance().getCookie("login_id"));
                                         }
                                     } else {
                                         erorr_code = 1;

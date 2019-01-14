@@ -14,15 +14,21 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.javaking.ourmeal.model.Health;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class RegistActivity  extends AppCompatActivity {
 
-    private static final String IP = "http://192.168.10.50:8080";
+    private static final String IP = "http://192.168.0.17:8080";
 
     RadioButton radiobtn_male;
     RadioButton radiobtn_female;
@@ -54,6 +60,12 @@ public class RegistActivity  extends AppCompatActivity {
     TextView member_address_error;
     TextView member_email_error;
 
+    //성별
+    RadioButton man;
+    RadioButton woman;
+    RadioGroup sex;
+    String gender;
+
     private WebView daum_webView;
     private TextView daum_result;
 
@@ -82,9 +94,25 @@ public class RegistActivity  extends AppCompatActivity {
         member_phone_error = findViewById(R.id.member_phone_error);
         member_address_error = findViewById(R.id.member_address_error);
         member_email_error = findViewById(R.id.member_email_error);
+        man = (RadioButton)findViewById(R.id.radiobtn_female);
+        woman = (RadioButton)findViewById(R.id.radiobtn_male);
+        sex = (RadioGroup)findViewById(R.id.sex);
     }
 
     public void setEvents() {
+        sex.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(man.isChecked()){
+                    gender = "W";
+                }
+
+                if(woman.isChecked()){
+                    gender = "M";
+                }
+            }
+        });
+
         btn_member_address.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 View address = View.inflate(getApplicationContext(),
@@ -249,7 +277,9 @@ public class RegistActivity  extends AppCompatActivity {
                             String pw1 = "&member_pw=" + member_pw1.getText().toString();
                             String name = "&member_name=" + member_name.getText().toString();
                             String birth = "&member_birth=" + member_birth.getText().toString();
+                            String sex = "&Member_sex=" + gender;
                             String phone = "&member_phone=" + member_phone.getText().toString();
+
                             String address = "&member_address=" + member_address_01.getText().toString() +
                                     " " + member_address_02.getText().toString() +
                                     " " + member_address_03.getText().toString();
@@ -259,12 +289,52 @@ public class RegistActivity  extends AppCompatActivity {
                             httpURLConnection.getOutputStream().write(pw1.getBytes());
                             httpURLConnection.getOutputStream().write(name.getBytes());
                             httpURLConnection.getOutputStream().write(birth.getBytes());
+                            httpURLConnection.getOutputStream().write(sex.getBytes());
                             httpURLConnection.getOutputStream().write(phone.getBytes());
                             httpURLConnection.getOutputStream().write(address.getBytes());
                             httpURLConnection.getOutputStream().write(email.getBytes());
 
-                            httpURLConnection.getResponseCode();
-                            // String a = String.format("member_id=%s&member_pw=%s",member_id.getText().toString())
+                            if (httpURLConnection.getResponseCode() == 200) {
+                                // Success
+                                BufferedReader in =
+                                        new BufferedReader(
+                                                new InputStreamReader(
+                                                        httpURLConnection.getInputStream()));
+                                StringBuffer buffer = new StringBuffer();
+                                String temp = null;
+                                while((temp = in.readLine())!=null)
+                                    buffer.append(temp);
+
+                                Gson gson = new Gson();
+                                final String result = gson.fromJson(buffer.toString(), String.class);
+
+                                if(result.equals("1")){
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "회원 등록 성공", Toast.LENGTH_SHORT);
+                                            finish();
+                                        }
+                                    });
+                                }else{
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "회원 등록을 실패 하였습니다.", Toast.LENGTH_SHORT);
+                                        }
+                                    });
+                                }
+                                in.close();
+
+                            } else {
+                                // Error
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패1", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
                         } catch (Exception e) {
 
                         }

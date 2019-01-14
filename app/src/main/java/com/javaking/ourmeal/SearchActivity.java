@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
-    //private static final String IP = "http://192.168.0.17:8080/OurMeal/";
-    private static final String IP = "http://192.168.10.50:8080/OurMeal/";
+    private static final String IP = "http://192.168.0.17:8080";//집
 
     TextView search_title;
     ImageView serach_result_img;
@@ -60,8 +59,8 @@ public class SearchActivity extends AppCompatActivity {
         String s_title = getIntent().getStringExtra("search");
         final ArrayList<S_Store> result = (ArrayList<S_Store>)getIntent().getSerializableExtra("list");
 
-        Log.d("이미지 경로", IP+result.get(0).getStore_image());
-        Glide.with(getApplicationContext()).load(IP+result.get(0).getStore_image()).into(serach_result_img);
+        Log.d("이미지 경로", IP+ "/OurMeal/" +result.get(0).getStore_image());
+        Glide.with(getApplicationContext()).load(IP+"/OurMeal/"+result.get(0).getStore_image()).into(serach_result_img);
         serach_result_title.setText(result.get(0).getStore_title());
         serach_result_num.setText(result.get(0).getScore_avg());
         serach_result_addr.setText(result.get(0).getStore_address());
@@ -94,7 +93,7 @@ public class SearchActivity extends AppCompatActivity {
             Button sub_top_btn = dynamicView.findViewById(R.id.main_btn);
 
             sub_search_title.setText(s_title +"에 대한 검색 결과");
-            Glide.with(getApplicationContext()).load(IP+result.get(i).getStore_image()).into(sub_result_image);
+            Glide.with(getApplicationContext()).load(IP+"/OurMeal/"+result.get(i).getStore_image()).into(sub_result_image);
             sub_result_Title.setText(result.get(i).getStore_title());
             sub_result_num.setText(result.get(i).getScore_avg());
             sub_result_addr.setText(result.get(i).getStore_address());

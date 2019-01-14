@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 public class MyPageActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "아이유";
-    private static final String IP = "http://192.168.10.50:8080";
+    private static final String IP = "http://192.168.0.17:8080";//집
 
     Toolbar toolBar;
     String image_path = null;
@@ -83,7 +84,7 @@ public class MyPageActivity extends AppCompatActivity {
     TextView testLog;
 
     //회원 로그인 아이디 나중에 로그인한 값으로 대체하면된다.
-    String member_id = null;
+    String member_id = CookieManager.getInstance().getCookie("login_id");
 
     public void initRefs() {
 
@@ -123,9 +124,6 @@ public class MyPageActivity extends AppCompatActivity {
         str_mb_kcal.setClickable(false);
 
         testLog = (TextView)findViewById(R.id.textView_log);
-
-        //로그인한 회원 아이디는
-        member_id = "user3";
     }
 
     int num = 0;
@@ -201,69 +199,69 @@ public class MyPageActivity extends AppCompatActivity {
                 //select
 
                 //신체 사이즈 입력 하면 하루 권장 섭취 칼로리 나옴.
-                    //신체 사이즈 관련 처리
-                    AsyncTask.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                URL endPoint = new URL(IP + "/OurMeal/myPage/Health_Select");
+                //신체 사이즈 관련 처리
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            URL endPoint = new URL(IP + "/OurMeal/myPage/Health_Select");
 
-                                HttpURLConnection myConnection =
-                                        (HttpURLConnection) endPoint.openConnection();
-                                myConnection.setRequestMethod("POST");
+                            HttpURLConnection myConnection =
+                                    (HttpURLConnection) endPoint.openConnection();
+                            myConnection.setRequestMethod("POST");
 
-                                String requestParam = String.format("member_id=%s", member_id);
+                            String requestParam = String.format("member_id=%s", member_id);
 
-                                myConnection.setDoOutput(true);
-                                myConnection.getOutputStream().write(requestParam.getBytes());
+                            myConnection.setDoOutput(true);
+                            myConnection.getOutputStream().write(requestParam.getBytes());
 
-                                if (myConnection.getResponseCode() == 200) {
-                                    // Success
-                                    BufferedReader in =
-                                            new BufferedReader(
-                                                    new InputStreamReader(
-                                                            myConnection.getInputStream()));
-                                    StringBuffer buffer = new StringBuffer();
-                                    String temp = null;
-                                    while((temp = in.readLine())!=null)
-                                        buffer.append(temp);
+                            if (myConnection.getResponseCode() == 200) {
+                                // Success
+                                BufferedReader in =
+                                        new BufferedReader(
+                                                new InputStreamReader(
+                                                        myConnection.getInputStream()));
+                                StringBuffer buffer = new StringBuffer();
+                                String temp = null;
+                                while((temp = in.readLine())!=null)
+                                    buffer.append(temp);
 
-                                    Gson gson = new Gson();
-                                    final Health health = gson.fromJson(buffer.toString(), Health.class);
+                                Gson gson = new Gson();
+                                final Health health = gson.fromJson(buffer.toString(), Health.class);
 
-                                   if(health!=null){
-                                       runOnUiThread(new Runnable() {
-                                           @Override
-                                           public void run() {
-                                               str_mb_cm.setHint(health.getHealth_height().toString());
-                                               str_mb_kg.setHint(health.getHealth_weight().toString());
-                                               str_mb_kcal.setText(health.getHealth_basal().toString()+"㎉");
-                                           }
-                                       });
-                                   }
-                                   in.close();
-
-                                } else {
-                                    // Error
+                                if(health!=null){
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패1", Toast.LENGTH_SHORT).show();
+                                            str_mb_cm.setHint(health.getHealth_height().toString());
+                                            str_mb_kg.setHint(health.getHealth_weight().toString());
+                                            str_mb_kcal.setText(health.getHealth_basal().toString()+"㎉");
                                         }
                                     });
                                 }
+                                in.close();
 
-                            } catch (Exception e) {
-                                Log.d(LOG_TAG, e.getMessage());
+                            } else {
+                                // Error
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패2", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패1", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
+
+                        } catch (Exception e) {
+                            Log.d(LOG_TAG, e.getMessage());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패2", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                    });
+                    }
+                });
 
             }
         });
@@ -591,7 +589,7 @@ public class MyPageActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
-                                in.close();
+                                    in.close();
                                 } else {
                                     // Error
                                     runOnUiThread(new Runnable() {
@@ -680,7 +678,7 @@ public class MyPageActivity extends AppCompatActivity {
                                             }
                                         });
                                     }
-                                in.close();
+                                    in.close();
                                 } else {
                                     // Error
                                     runOnUiThread(new Runnable() {
