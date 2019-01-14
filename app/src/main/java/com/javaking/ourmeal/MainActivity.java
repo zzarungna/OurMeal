@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
@@ -23,18 +24,24 @@ import com.javaking.ourmeal.model.Store;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String IP = "http://192.168.0.17:8080"; //집
+    private static final String IP = "http://192.168.10.50:8080";
     private static String LOG_TAG = "아이유";
+
+    String msg = "아이디를 입력하세요";
+    int erorr_code;
 
     Toolbar toolBar;
     View dialogView;
+    Menu visible; // 메뉴 버튼 활성화 & 비활성화
 
     EditText str_main_search;
     ArrayList<S_Store> search_store_list = new ArrayList<>();
@@ -63,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
 
                     //검색 메소드 실행//검색 테스트용 이유저
-                    String test = "이유저";
+                    String test = "만리재로";
                     searchSelect(test);
                 }
                 return false;
@@ -76,36 +83,105 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+        visible = menu;
         return  true;
     }
     // 툴바 메뉴&검색 사용 메소드
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
+        if (CookieManager.getInstance().getCookie(IP +"/OurMeal") != null) {
+            visible.findItem(R.id.menu_login).setVisible(false);
+            visible.findItem(R.id.menu_logout).setVisible(true);
+            visible.findItem(R.id.menu_regist).setVisible(false);
+            visible.findItem(R.id.menu_mypage).setVisible(true);
+            visible.findItem(R.id.menu_partner).setVisible(true);
+            visible.findItem(R.id.menu_store).setVisible(true);
+            visible.findItem(R.id.menu_article).setVisible(true);
+        } else {
+            visible.findItem(R.id.menu_login).setVisible(true);
+            visible.findItem(R.id.menu_logout).setVisible(false);
+            visible.findItem(R.id.menu_regist).setVisible(true);
+            visible.findItem(R.id.menu_mypage).setVisible(false);
+            visible.findItem(R.id.menu_partner).setVisible(false);
+            visible.findItem(R.id.menu_store).setVisible(false);
+            visible.findItem(R.id.menu_article).setVisible(false);
+        }
         switch (item.getItemId()){
             case R.id.menu_login:
-                dialogView = (View)View.inflate(
-                        MainActivity.this,
-                        R.layout.activity_login, null);
-                AlertDialog.Builder dig =
-                        new AlertDialog.Builder(MainActivity.this);
-                dig.setView(dialogView);
-                dig.setPositiveButton("로그인", new DialogInterface.OnClickListener() {
+                dialogView = (View)View.inflate(MainActivity.this, R.layout.activity_login, null);
+                AlertDialog.Builder menu_login = new AlertDialog.Builder(MainActivity.this);
+                final EditText str_id =
+                        (EditText)dialogView.findViewById(R.id.str_id);
+                final EditText str_pw =
+                        (EditText)dialogView.findViewById(R.id.str_pw);
+                menu_login.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditText str_id =
-                                (EditText)dialogView.findViewById(R.id.str_id);
-                        EditText str_pw =
-                                (EditText)dialogView.findViewById(R.id.str_pw);
+                    public void onClick(final DialogInterface dialog, int which) {
+                        if (str_id.getText().toString().trim().length() == 0) {
+                            Toast.makeText(MainActivity.this, "아이디를 입력하세요", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else if(str_pw.getText().toString().trim().length() == 0) {
+                            Toast.makeText(MainActivity.this, "비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    URL endPoint =
+                                            new URL(IP +"/OurMeal/restful/login");
+                                    HttpURLConnection myConnection =
+                                            (HttpURLConnection) endPoint.openConnection();
+                                    myConnection.setRequestMethod("POST");
+                                    myConnection.setDoOutput(true);
+                                    myConnection.setDoInput(true);
+                                    String cookieString =
+                                            CookieManager.getInstance().getCookie(
+                                                    IP+"/OurMeal");
+                                    if (cookieString != null) {
+                                        myConnection.setRequestProperty("Cookie", cookieString);
+                                    }
 
-                        String msg = "입력된 ID : " + str_id.getText().toString() + "\n";
-                        msg += "입력된 PASSWORD : " + str_pw.getText().toString();
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                                    String requestParam = String.format("member_id=%s&member_pw=%s", str_id.getText().toString(), str_pw.getText().toString());
+
+                                    myConnection.getOutputStream().write(requestParam.getBytes());
+
+                                    if (myConnection.getResponseCode() == 200) {
+                                        Map<String, List<String>> headerFields = myConnection.getHeaderFields();
+                                        String COOKIES_HEADER = "Set-Cookie";
+                                        List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
+
+                                        if (cookiesHeader != null) {
+                                            for (String cookie : cookiesHeader) {
+                                                String cookieName = HttpCookie.parse(cookie).get(0).getName();
+                                                String cookieValue = HttpCookie.parse(cookie).get(0).getValue();
+
+                                                cookieString = cookieName + "=" + cookieValue;
+                                                CookieManager.getInstance().setCookie(IP+"/OurMeal", cookieString);
+                                            }
+                                            Log.d(LOG_TAG, CookieManager.getInstance().getCookie(IP+"/OurMeal"));
+                                        }
+                                    } else {
+                                        erorr_code = 1;
+                                    }
+                                } catch (Exception e) {
+                                    Log.d(LOG_TAG, e.getMessage());
+                                }
+                            }
+                        });
+                        if (erorr_code == 1) {
+                            Toast.makeText(MainActivity.this, "서버 요청 에러", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
-                dig.setNegativeButton("취소", null);
-                dig.show();
-                Toast.makeText(this, "로그인", Toast.LENGTH_LONG).show();
+                menu_login.setView(dialogView);
+                menu_login.setNegativeButton("취소", null);
+                menu_login.show();
+                break;
+            case R.id.menu_logout:
+                CookieManager.getInstance().removeAllCookies(null);
+                Toast.makeText(this, "로그아웃(쿠키가 삭제됨)", Toast.LENGTH_LONG).show();
                 break;
             case R.id.menu_regist:
                 Toast.makeText(this, "회원가입", Toast.LENGTH_LONG).show();

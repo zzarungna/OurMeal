@@ -22,6 +22,8 @@ import java.net.URL;
 
 public class RegistActivity  extends AppCompatActivity {
 
+    private static final String IP = "http://192.168.10.50:8080";
+
     RadioButton radiobtn_male;
     RadioButton radiobtn_female;
 
@@ -106,7 +108,7 @@ public class RegistActivity  extends AppCompatActivity {
                 daum_webView.setWebChromeClient(new WebChromeClient());
 
                 // webview url load. jsp 파일 주소
-                daum_webView.loadUrl("http://172.30.1.26:8080/OurMeal/m_juso");
+                daum_webView.loadUrl(IP + "/OurMeal/m_juso");
                 // daum_webView.loadUrl("http://192.168.0.11:8080/OurMeal/m_juso");
                 dialog.setContentView(address);
                 dialog.setTitle("주소 검색");
@@ -237,7 +239,7 @@ public class RegistActivity  extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            URL url = new URL("http://172.30.1.26:8080/OurMeal/m_regist");
+                            URL url = new URL(IP + "/OurMeal/m_regist");
                             // URL url = new URL("http://192.168.0.11:8080/OurMeal/m_regist");
                             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                             httpURLConnection.setDoOutput(true);

@@ -17,12 +17,14 @@
                 android:id="@+id/menu_login"
                 android:title="로그인" />
             <item
+                android:id="@+id/menu_logout"
+                android:title="로그아웃" />
+            <item
                 android:id="@+id/menu_regist"
                 android:title="회원가입" />
             <item
                 android:id="@+id/menu_mypage"
                 android:title="마이페이지" />
-            <!--
             <item
                 android:id="@+id/menu_partner"
                 android:title="파트너신청" />
@@ -32,8 +34,6 @@
             <item
                 android:id="@+id/menu_article"
                 android:title="게시판" />
-            -->
         </menu>
     </item>
-
 </menu>

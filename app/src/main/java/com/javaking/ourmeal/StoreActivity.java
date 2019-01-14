@@ -75,7 +75,10 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String ip = "http://192.168.0.17:8080";
+    private static final String IP = "http://192.168.10.50:8080";
+
+    //회원 로그인 아이디 나중에 로그인한 값으로 대체하면된다.
+    String member_id = null;
 
     RelativeLayout mapView;
     TextView store_title;
@@ -107,6 +110,7 @@ public class StoreActivity extends AppCompatActivity {
     String getStorecode = null;
     TextView menuTitle;
 
+
     public RequestManager mGlideRequestManager;
 
     final String sc = "";
@@ -131,6 +135,8 @@ public class StoreActivity extends AppCompatActivity {
 
         //상단 버튼
         main_btn = findViewById(R.id.main_btn);
+        //로그인한 회원 아이디는
+        member_id = "user3";
     }
 
     public int more_button(){
@@ -218,16 +224,16 @@ public class StoreActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            URL endPoint = new URL(ip + "/OurMeal/m/menuInfo");
+                            URL endPoint = new URL(IP + "/OurMeal/m/menuInfo");
 
                             HttpURLConnection myConnection =
                                     (HttpURLConnection) endPoint.openConnection();
                             myConnection.setRequestMethod("POST");
 
-                            final String id = "user";
+                            //final String id = "user1";
                             //final String store_code = "S19010800001";
 
-                            final String requestParam = String.format("id=%s&store_code=%s", id,getStorecode);
+                            final String requestParam = String.format("id=%s&store_code=%s", member_id,getStorecode);
 
                             myConnection.setDoOutput(true);
                             myConnection.getOutputStream().write(requestParam.getBytes());
@@ -263,14 +269,14 @@ public class StoreActivity extends AppCompatActivity {
                                     menu_kcal.setText("열량 : " + food_menulist.get(0).getFm_kcal()+"㎉");
                                 }
 
-                                Log.d("아이유", ip+ "/OurMeal" + food_menulist.get(0).getFm_image());
+                                Log.d("아이유", IP+ "/OurMeal" + food_menulist.get(0).getFm_image());
 
 
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         ImageView menu_image = menuDialogView.findViewById(R.id.menu_image);
-                                        Glide.with(getApplicationContext()).load(ip+ "/OurMeal"+food_menulist.get(0).getFm_image()).into(menu_image);
+                                        Glide.with(getApplicationContext()).load(IP+ "/OurMeal"+food_menulist.get(0).getFm_image()).into(menu_image);
 
                                         if(food_menulist.size()!=0){
                                             LinearLayout mainlayout = (LinearLayout)menuDialogView.findViewById(R.id.menu_layout);
@@ -292,7 +298,7 @@ public class StoreActivity extends AppCompatActivity {
                                                 sub_menu_price.setText("가격 : " + food_menulist.get(i).getFm_price()+"원");
                                                 sub_menu_allergy.setText("알레르기 : " + food_menulist.get(i).getFm_allergy());
                                                 sub_menu_kcal.setText("열량 : " + food_menulist.get(i).getFm_kcal()+"㎉");
-                                                Glide.with(getApplicationContext()).load(ip+ "/OurMeal"+food_menulist.get(i).getFm_image()).into(sub_menu_image);
+                                                Glide.with(getApplicationContext()).load(IP+ "/OurMeal"+food_menulist.get(i).getFm_image()).into(sub_menu_image);
 
                                                 mainlayout.addView(dynamicView);
                                             }
@@ -387,14 +393,14 @@ public class StoreActivity extends AppCompatActivity {
                                         String boundary = "*****";
 
                                         HttpURLConnection httpUrlConnection = null;
-                                        URL url = new URL(ip + "/OurMeal/store/write_review");
+                                        URL url = new URL(IP + "/OurMeal/store/write_review");
                                         httpUrlConnection = (HttpURLConnection) url.openConnection();
                                         httpUrlConnection.setUseCaches(false);
                                         httpUrlConnection.setDoOutput(true);
                                         httpUrlConnection.setDoInput(true);
                                         httpUrlConnection.setRequestMethod("POST");
 
-                                        final String id = "user";
+                                        //final String id = "user";
                                         //final String store_code = "S19010800001";
                                         final String content = review.getText().toString();
                                         final String sb_number = String.valueOf(rb.getRating());
@@ -422,7 +428,7 @@ public class StoreActivity extends AppCompatActivity {
                                         request.writeBytes(twoHyphens + boundary + crlf);
                                         request.writeBytes("Content-Disposition: form-data; name=\"id\"" + crlf);
                                         request.writeBytes(crlf);
-                                        request.writeBytes(id + crlf);
+                                        request.writeBytes(member_id + crlf);
                                         //이거는 진짜 심하다...
 
                                         //18 좉같다 진짜 이거는...아오
@@ -511,7 +517,7 @@ public class StoreActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             URL endPoint =
-                                    new URL(ip+"/OurMeal/m_storePage/reviewAdd");
+                                    new URL(IP+"/OurMeal/m_storePage/reviewAdd");
                             HttpURLConnection myConnection =
                                     (HttpURLConnection) endPoint.openConnection();
 
@@ -682,7 +688,7 @@ public class StoreActivity extends AppCompatActivity {
             public void run() {
                 try {
                     URL endPoint =
-                            new URL(ip+"/OurMeal/m_storePage?"+"store_code="+getStorecode);
+                            new URL(IP+"/OurMeal/m_storePage?"+"store_code="+getStorecode);
                     HttpURLConnection myConnection =
                             (HttpURLConnection) endPoint.openConnection();
                     //myConnection.setRequestMethod("GET");
@@ -786,7 +792,7 @@ public class StoreActivity extends AppCompatActivity {
 
                                     if(!imageList.get(i).getSb_image().trim().equals("")) {
                                         Log.d(LOG_TAG,"image " + "(" + i + ")" + imageList.get(i).getSb_image());
-                                        String str_imgPath = ip+"/OurMeal/"+imageList.get(i).getSb_image();
+                                        String str_imgPath = IP+"/OurMeal/"+imageList.get(i).getSb_image();
 
                                         // Glide.with(getApplicationContext()).load("http://192.168.25.183:8080/OurMeal/"+list.get(i).getSb_image()).into(imageView1);
 
