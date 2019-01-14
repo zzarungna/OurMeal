@@ -237,7 +237,7 @@ public class RegistActivity  extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            URL url = new URL("http://172.30.1.2:8080/OurMeal/m_regist");
+                            URL url = new URL("http://172.30.1.26:8080/OurMeal/m_regist");
                             // URL url = new URL("http://192.168.0.11:8080/OurMeal/m_regist");
                             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                             httpURLConnection.setDoOutput(true);
