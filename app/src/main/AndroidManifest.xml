@@ -33,8 +33,6 @@
         <activity android:name=".PartnerActivity"/>
         <activity android:name=".RegistActivity"/>
         <activity android:name=".SearchActivity"/>
-
-        <activity android:name=".DaumWebViewActivity"></activity>
     </application>
 
 </manifest>
