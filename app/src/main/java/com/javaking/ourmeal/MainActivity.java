@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
+//abcd
     private static final String IP = "http://192.168.10.50:8080";
     private static String LOG_TAG = "아이유";
 
