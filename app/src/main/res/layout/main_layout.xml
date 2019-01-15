@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ourmeal_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/line"
+        android:orientation="vertical"
+        android:paddingTop="14dp">
+
+        <TextView
+            android:id="@+id/score_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line"
+            android:text="OurMeal의 평점 높은 식당"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/main_img"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                android:src="@drawable/food_a" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/main_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="41dp"
+                    android:text="식당이름"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_avg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="평점"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/main_addr"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="주소"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

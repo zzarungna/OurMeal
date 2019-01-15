@@ -404,7 +404,7 @@ public class StoreActivity extends AppCompatActivity {
                                         //final String store_code = "S19010800001";
                                         final String content = review.getText().toString();
                                         final String sb_number = String.valueOf(rb.getRating());
-                                        Log.d("아이유", String.valueOf(sb_number));
+                                        Log.d("아이유", content);
 
                                         // key, value 형태 // Content-Type: multipart/form-data; boundary=*****
                                         httpUrlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
@@ -442,7 +442,8 @@ public class StoreActivity extends AppCompatActivity {
                                         request.writeBytes(twoHyphens + boundary + crlf);
                                         request.writeBytes("Content-Disposition: form-data; name=\"content\"" + crlf);
                                         request.writeBytes(crlf);
-                                        request.writeBytes(content + crlf);
+                                        request.writeUTF(content);
+                                        request.writeBytes(crlf);
                                         //이거는 진짜 심하다...
 
                                         //18 좉같다 진짜 이거는...아오

@@ -100,7 +100,12 @@ public class SearchActivity extends AppCompatActivity {
             sub_result_rcount.setText(String.valueOf(result.get(i).getStore_reviewCount()));
 
             //메인버튼은 하나만 나오도록
-            sub_top_btn.setVisibility(View.INVISIBLE);
+            if(i>0){
+                sub_top_btn.setVisibility(View.INVISIBLE);
+                sub_search_title.setHeight(0);
+                sub_search_title.setVisibility(View.INVISIBLE);
+            }
+
 
             mainlayout.addView(dynamicView);
 

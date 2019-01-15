@@ -1,5 +1,6 @@
 package com.javaking.ourmeal;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,21 +14,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.javaking.ourmeal.model.MainView;
 import com.javaking.ourmeal.model.S_Store;
 import com.javaking.ourmeal.model.Store;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,10 +56,192 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<S_Store> search_store_list = new ArrayList<>();
     String search_result;
 
+    int temp_a;
+    int temp_b;
+    int temp_c;
+
+    String store_code;
+
     public void initRefs() {
         toolBar = (Toolbar) findViewById(R.id.toolBar);
         str_main_search = findViewById(R.id.str_main_search);
         search_result = str_main_search.getText().toString();
+
+        temp_a = 0;
+        temp_b = 0;
+        temp_c = 0;
+        //메인 페이지 불러오기.
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL endPoint = new URL(IP + "/OurMeal/m/m_main");
+
+                    HttpURLConnection myConnection =
+                            (HttpURLConnection) endPoint.openConnection();
+
+                    if (myConnection.getResponseCode() == 200) {
+                        // Success
+                        BufferedReader in =
+                                new BufferedReader(
+                                        new InputStreamReader(
+                                                myConnection.getInputStream()));
+                        StringBuffer buffer = new StringBuffer();
+                        String temp = null;
+                        while((temp = in.readLine())!=null)
+                            buffer.append(temp);
+
+                        Gson gson = new Gson();
+                        final HashMap <String,List<MainView>> main_data = gson.fromJson(buffer.toString(), new TypeToken<HashMap<String,List<MainView>>>(){}.getType());
+
+                        //메인 레이아웃
+                        final LinearLayout ourmeal_mainlayout = (LinearLayout)findViewById(R.id.ourmeal_main);
+
+                        //평점 높은 식당
+                        final ArrayList<MainView> mainScore_List = (ArrayList<MainView>) main_data.get("mainScore");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(int i=0; i<mainScore_List.size(); i++){
+                                    LinearLayout dynamicView = (LinearLayout)View.inflate(MainActivity.this, R.layout.main_layout, null);
+                                    TextView dynamic_title = dynamicView.findViewById(R.id.score_title);
+                                    TextView dynamic_name = dynamicView.findViewById(R.id.main_name);
+                                    TextView dynamic_avg = dynamicView.findViewById(R.id.main_avg);
+                                    TextView dynamic_addr = dynamicView.findViewById(R.id.main_addr);
+                                    ImageView dynamic_image = dynamicView.findViewById(R.id.main_img);
+
+                                    Glide.with(getApplicationContext()).load(IP+ "/OurMeal"+mainScore_List.get(i).getStore_image()).into(dynamic_image);
+                                    dynamic_name.setText(mainScore_List.get(i).getStore_title());
+                                    dynamic_avg.setText(mainScore_List.get(i).getAvg_score());
+                                    dynamic_addr.setText(mainScore_List.get(i).getStore_address());
+
+                                    temp_a = i;
+                                    dynamic_image.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
+                                            store_intent.putExtra("store_code", mainScore_List.get(temp_a).getStore_code());
+                                            startActivity(store_intent);
+                                        }
+                                    });
+
+                                    if(i>0){
+                                        dynamic_title.setVisibility(View.INVISIBLE);
+                                        dynamic_title.setHeight(0);
+                                    }
+                                    ourmeal_mainlayout.addView(dynamicView);
+
+                                    store_code = mainScore_List.get(i).getStore_code();
+
+                                }
+                            }
+                        });
+
+                        //댓글 순
+                        final ArrayList<MainView> mainBulletin_List = (ArrayList<MainView>) main_data.get("mainBulletin");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(int i=0; i<mainBulletin_List.size(); i++){
+                                    LinearLayout dynamicView = (LinearLayout)View.inflate(MainActivity.this, R.layout.main_layout, null);
+                                    TextView dynamic_title = dynamicView.findViewById(R.id.score_title);
+                                    TextView dynamic_name = dynamicView.findViewById(R.id.main_name);
+                                    TextView dynamic_avg = dynamicView.findViewById(R.id.main_avg);
+                                    TextView dynamic_addr = dynamicView.findViewById(R.id.main_addr);
+
+                                    dynamic_name.setText(mainBulletin_List.get(i).getStore_title());
+                                    dynamic_avg.setText(mainBulletin_List.get(i).getAvg_score());
+                                    dynamic_addr.setText(mainBulletin_List.get(i).getStore_address());
+
+                                    ImageView dynamic_image = dynamicView.findViewById(R.id.main_img);
+
+                                    Glide.with(getApplicationContext()).load(IP+ "/OurMeal"+mainBulletin_List.get(i).getStore_image()).into(dynamic_image);
+
+                                    dynamic_title.setText("OurMeal의 댓글이 많이\n 달린 식당");
+                                    if(i>0){
+                                        dynamic_title.setVisibility(View.INVISIBLE);
+                                        dynamic_title.setHeight(0);
+                                    }
+
+                                    temp_b = i;
+                                    dynamic_image.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
+                                            store_intent.putExtra("store_code", mainBulletin_List.get(temp_b).getStore_code());
+                                            startActivity(store_intent);
+                                        }
+                                    });
+
+                                    ourmeal_mainlayout.addView(dynamicView);
+                                }
+                            }
+                        });
+
+
+                        //등록순
+                        final ArrayList<MainView> mainNewest_List = (ArrayList<MainView>) main_data.get("mainNewest");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(int i=0; i<mainNewest_List.size(); i++){
+                                    LinearLayout dynamicView = (LinearLayout)View.inflate(MainActivity.this, R.layout.main_layout, null);
+                                    TextView dynamic_title = dynamicView.findViewById(R.id.score_title);
+                                    TextView dynamic_name = dynamicView.findViewById(R.id.main_name);
+                                    TextView dynamic_avg = dynamicView.findViewById(R.id.main_avg);
+                                    TextView dynamic_addr = dynamicView.findViewById(R.id.main_addr);
+
+                                    dynamic_name.setText(mainNewest_List.get(i).getStore_title());
+                                    dynamic_avg.setText(mainNewest_List.get(i).getAvg_score());
+                                    dynamic_addr.setText(mainNewest_List.get(i).getStore_address());
+                                    ImageView dynamic_image = dynamicView.findViewById(R.id.main_img);
+
+                                    Glide.with(getApplicationContext()).load(IP+ "/OurMeal"+mainNewest_List.get(i).getStore_image()).into(dynamic_image);
+
+                                    dynamic_title.setText("OurMeal에 새로 등록한 식당");
+                                    if(i>0){
+                                        dynamic_title.setVisibility(View.INVISIBLE);
+                                        dynamic_title.setHeight(0);
+                                    }
+
+                                    temp_c = i;
+                                    dynamic_image.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
+                                            store_intent.putExtra("store_code", mainNewest_List.get(temp_c).getStore_code());
+                                            startActivity(store_intent);
+                                        }
+                                    });
+                                    ourmeal_mainlayout.addView(dynamicView);
+                                }
+                            }
+                        });
+
+
+
+                        in.close();
+                    } else {
+                        // Error
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패1", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                } catch (Exception e) {
+                    Log.d(LOG_TAG, e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "서버 연결 및 메세지 읽기 실패2", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public void setEvents() {
