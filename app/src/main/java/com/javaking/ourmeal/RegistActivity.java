@@ -1,13 +1,17 @@
 package com.javaking.ourmeal;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -28,7 +32,7 @@ import java.net.URL;
 
 public class RegistActivity  extends AppCompatActivity {
 
-    private static final String IP = "http://192.168.10.50:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
 
     RadioButton radiobtn_male;
     RadioButton radiobtn_female;
@@ -263,6 +267,7 @@ public class RegistActivity  extends AppCompatActivity {
                     member_email_error.setText("");
                 }
 
+                CookieManager.getInstance().removeAllCookies(null);
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -307,12 +312,18 @@ public class RegistActivity  extends AppCompatActivity {
 
                                 Gson gson = new Gson();
                                 final String result = gson.fromJson(buffer.toString(), String.class);
-
+                                Log.d("아이유",result);
                                 if(result.equals("1")){
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(getApplicationContext(), "회원 등록 성공", Toast.LENGTH_SHORT);
+                                            Context context = getApplicationContext();
+                                            CharSequence text = "회원 등록 성공";
+                                            int duration = Toast.LENGTH_SHORT;
+
+                                            Toast toast = Toast.makeText(context, text, duration);
+                                            toast.show();
+                                            toast.setGravity(Gravity.TOP|Gravity.LEFT, 500, 0);
                                             finish();
                                         }
                                     });
@@ -320,7 +331,13 @@ public class RegistActivity  extends AppCompatActivity {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(getApplicationContext(), "회원 등록을 실패 하였습니다.", Toast.LENGTH_SHORT);
+                                            Context context = getApplicationContext();
+                                            CharSequence text = "회원 등록 실패";
+                                            int duration = Toast.LENGTH_SHORT;
+
+                                            Toast toast = Toast.makeText(context, text, duration);
+                                            toast.show();
+                                            toast.setGravity(Gravity.TOP|Gravity.LEFT, 500, 0);
                                         }
                                     });
                                 }

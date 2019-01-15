@@ -76,7 +76,7 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String IP = "http://192.168.10.50:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
 
     //로그인한 회원 아이디는
     String member_id = CookieManager.getInstance().getCookie("login_id");
@@ -339,6 +339,10 @@ public class StoreActivity extends AppCompatActivity {
         btn_review.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(member_id==null){
+                    Toast.makeText(getApplicationContext(),"로그인후 리뷰 작성이 가능 합니다.",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 dialogView = (View)View.inflate(StoreActivity.this, R.layout.review_write, null);
                 AlertDialog.Builder dig = new AlertDialog.Builder(StoreActivity.this);
                 dig.setView(dialogView);
@@ -358,7 +362,6 @@ public class StoreActivity extends AppCompatActivity {
                 dig.setPositiveButton("리뷰 등록", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
                         if(!profile_check){
                             Toast.makeText(getApplicationContext(), "이미지를 첨부해 주세요!", Toast.LENGTH_SHORT).show();
                             return;
@@ -511,6 +514,8 @@ public class StoreActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Toast.makeText(getApplicationContext(),Integer.toString(num),Toast.LENGTH_SHORT).show();
+
+
 
                 AsyncTask.execute(new Runnable() {
                     @Override

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
-    private static final String IP = "http://192.168.10.50:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
 
     TextView search_title;
     ImageView serach_result_img;
@@ -36,8 +36,6 @@ public class SearchActivity extends AppCompatActivity {
     Button main_Btn;
 
     Toolbar toolBar;
-
-    int temp = 0;
 
     private void init() {
         search_title = (TextView)findViewById(R.id.search_title);
@@ -109,15 +107,7 @@ public class SearchActivity extends AppCompatActivity {
 
             mainlayout.addView(dynamicView);
 
-            temp = i;
-            sub_result_image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
-                    store_intent.putExtra("store_code", result.get(temp).getStore_code());
-                    startActivity(store_intent);
-                }
-            });
+            click_method(sub_result_image, result.get(i).getStore_code());
         }
 
         main_Btn.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +119,19 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    //클릭 메소드
+    private void click_method(ImageView view, final String s_code){
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
+                store_intent.putExtra("store_code", s_code);
+                startActivity(store_intent);
+            }
+        });
     }
 
 }

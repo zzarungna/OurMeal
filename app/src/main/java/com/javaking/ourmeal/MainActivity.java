@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String IP = "http://192.168.10.50:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
     private static String LOG_TAG = "아이유";
 
     String msg = "아이디를 입력하세요";
@@ -56,10 +56,6 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<S_Store> search_store_list = new ArrayList<>();
     String search_result;
 
-    int temp_a;
-    int temp_b;
-    int temp_c;
-
     String store_code;
 
     public void initRefs() {
@@ -67,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
         str_main_search = findViewById(R.id.str_main_search);
         search_result = str_main_search.getText().toString();
 
-        temp_a = 0;
-        temp_b = 0;
-        temp_c = 0;
         //메인 페이지 불러오기.
         AsyncTask.execute(new Runnable() {
             @Override
@@ -115,15 +108,7 @@ public class MainActivity extends AppCompatActivity {
                                     dynamic_avg.setText(mainScore_List.get(i).getAvg_score());
                                     dynamic_addr.setText(mainScore_List.get(i).getStore_address());
 
-                                    temp_a = i;
-                                    dynamic_image.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
-                                            store_intent.putExtra("store_code", mainScore_List.get(temp_a).getStore_code());
-                                            startActivity(store_intent);
-                                        }
-                                    });
+                                    click_method(dynamic_image, mainScore_List.get(i).getStore_code());
 
                                     if(i>0){
                                         dynamic_title.setVisibility(View.INVISIBLE);
@@ -163,15 +148,7 @@ public class MainActivity extends AppCompatActivity {
                                         dynamic_title.setHeight(0);
                                     }
 
-                                    temp_b = i;
-                                    dynamic_image.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
-                                            store_intent.putExtra("store_code", mainBulletin_List.get(temp_b).getStore_code());
-                                            startActivity(store_intent);
-                                        }
-                                    });
+                                    click_method(dynamic_image, mainBulletin_List.get(i).getStore_code());
 
                                     ourmeal_mainlayout.addView(dynamicView);
                                 }
@@ -204,15 +181,7 @@ public class MainActivity extends AppCompatActivity {
                                         dynamic_title.setHeight(0);
                                     }
 
-                                    temp_c = i;
-                                    dynamic_image.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
-                                            store_intent.putExtra("store_code", mainNewest_List.get(temp_c).getStore_code());
-                                            startActivity(store_intent);
-                                        }
-                                    });
+                                    click_method(dynamic_image, mainNewest_List.get(i).getStore_code());
                                     ourmeal_mainlayout.addView(dynamicView);
                                 }
                             }
@@ -260,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
 
-                    //검색 메소드 실행//검색 테스트용 이유저
+                    //검색 메소드 실행
                     String search_text = str_main_search.getText().toString();
                     searchSelect(search_text);
                 }
@@ -354,6 +323,13 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                             Log.d(LOG_TAG, CookieManager.getInstance().getCookie(IP+"/OurMeal"));
                                             Log.d(LOG_TAG, CookieManager.getInstance().getCookie("login_id"));
+
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(), "로그인 성공!", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                         }
                                     } else {
                                         erorr_code = 1;
@@ -409,8 +385,8 @@ public class MainActivity extends AppCompatActivity {
                 search_result = str_main_search.getText().toString();
 
                 //검색 메소드 실행//검색 테스트용 이유저
-                String test = "이유저";
-                searchSelect(test);
+                String search_text = str_main_search.getText().toString();
+                searchSelect(search_text);
                 break;
         }
         return true;
@@ -426,6 +402,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    //클릭 메소드
+    private void click_method(ImageView view, final String s_code){
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent store_intent = new Intent(getApplicationContext(), StoreActivity.class);
+                store_intent.putExtra("store_code", s_code);
+                startActivity(store_intent);
+            }
+        });
+    }
+
 
     //검색 웹서버 통신 메소드
     private void searchSelect(final String search_Text){
@@ -458,14 +447,12 @@ public class MainActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         search_store_list = gson.fromJson(buffer.toString(), new TypeToken<ArrayList<S_Store>>(){}.getType());
 
-
-                        if(search_store_list!=null){
+                        if(search_store_list.size()!=0){
                             //검색 결과
                             String search_text = str_main_search.getText().toString();
 
                             //여기서 검색 결과 레이아웃으로 이동
                             Intent search_intent = new Intent(getApplicationContext(), SearchActivity.class);
-                            Log.d("아이유", String.valueOf(search_store_list.size()));
 
                             //인텐트로 값전달
                             search_intent.putExtra("search", search_text);
