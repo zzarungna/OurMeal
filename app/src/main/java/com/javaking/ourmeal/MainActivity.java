@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String IP = "http://192.168.0.17:8080";//집
+    private static final String IP = "http://192.168.10.50:8080";//학원
     private static String LOG_TAG = "아이유";
 
     String msg = "아이디를 입력하세요";

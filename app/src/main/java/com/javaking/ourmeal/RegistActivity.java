@@ -28,7 +28,7 @@ import java.net.URL;
 
 public class RegistActivity  extends AppCompatActivity {
 
-    private static final String IP = "http://192.168.0.17:8080";
+    private static final String IP = "http://192.168.10.50:8080";//학원
 
     RadioButton radiobtn_male;
     RadioButton radiobtn_female;

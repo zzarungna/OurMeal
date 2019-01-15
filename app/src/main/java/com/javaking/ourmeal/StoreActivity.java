@@ -29,6 +29,7 @@ import android.util.Log;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -75,10 +76,10 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String IP = "http://192.168.0.17:8080";//집
+    private static final String IP = "http://192.168.10.50:8080";//학원
 
-    //회원 로그인 아이디 나중에 로그인한 값으로 대체하면된다.
-    String member_id = null;
+    //로그인한 회원 아이디는
+    String member_id = CookieManager.getInstance().getCookie("login_id");
 
     RelativeLayout mapView;
     TextView store_title;
@@ -135,8 +136,6 @@ public class StoreActivity extends AppCompatActivity {
 
         //상단 버튼
         main_btn = findViewById(R.id.main_btn);
-        //로그인한 회원 아이디는
-        member_id = "user3";
     }
 
     public int more_button(){
