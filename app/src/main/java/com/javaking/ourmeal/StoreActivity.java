@@ -30,6 +30,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -76,7 +79,8 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String IP = "http://172.30.1.37:8080";//학원
+    //private static final String IP = "http://172.30.1.37:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
 
     //로그인한 회원 아이디는
     String member_id = CookieManager.getInstance().getCookie("login_id");
@@ -111,6 +115,7 @@ public class StoreActivity extends AppCompatActivity {
     String getStorecode = null;
     TextView menuTitle;
 
+    WebView webView;
 
     public RequestManager mGlideRequestManager;
 
@@ -130,12 +135,12 @@ public class StoreActivity extends AppCompatActivity {
         store_address = findViewById(R.id.store_address);
         str_reviewCount = (TextView)findViewById(R.id.str_reviewCount);
         btn_more = findViewById(R.id.btn_more);
-        mapView = findViewById(R.id.map_view);
         profile_check = false;
         menuTitle = findViewById(R.id.menuTitle);
 
         //상단 버튼
         main_btn = findViewById(R.id.main_btn);
+        webView = (WebView)findViewById(R.id.web_view);
     }
 
     public int more_button(){
@@ -260,8 +265,8 @@ public class StoreActivity extends AppCompatActivity {
                                 if(food_menulist==null){
                                     menu_name.setText("등록된 메뉴 정보가 없습니다.");
                                 }else{
-                                    menu_name.setText("메뉴 이름 : " + food_menulist.get(0).getFm_name());
-                                    menu_infor.setText("메뉴 설명 : " + food_menulist.get(0).getFm_info());
+                                    menu_name.setText("메뉴 : " + food_menulist.get(0).getFm_name());
+                                    menu_infor.setText("설명 : " + food_menulist.get(0).getFm_info());
                                     menu_price.setText("가격 : " +food_menulist.get(0).getFm_price()+"원");
 
                                     if(food_menulist.get(0).getFm_allergy().equals("null ")){
@@ -297,8 +302,8 @@ public class StoreActivity extends AppCompatActivity {
                                                 TextView sub_menuTitle = dynamicView.findViewById(R.id.menuTitle);
 
                                                 sub_menuTitle.setVisibility(View.INVISIBLE);
-                                                sub_menu_name.setText("메뉴 이름 : "+food_menulist.get(i).getFm_name());
-                                                sub_menu_infor.setText("메뉴 설명 : " +food_menulist.get(i).getFm_info());
+                                                sub_menu_name.setText("메뉴 : "+food_menulist.get(i).getFm_name());
+                                                sub_menu_infor.setText("설명 : " +food_menulist.get(i).getFm_info());
                                                 sub_menu_price.setText("가격 : " + food_menulist.get(i).getFm_price()+"원");
                                                 if(food_menulist.get(i).getFm_allergy().equals("null ")){
                                                     sub_menu_allergy.setText("알레르기 정보가 없습니다.");
@@ -826,7 +831,10 @@ public class StoreActivity extends AppCompatActivity {
                                 store_address.setText(store.getStore_address());
 
                                 //지도
-
+                                WebSettings webSettings = webView.getSettings();
+                                webSettings.setJavaScriptEnabled(true);
+                                webView.loadUrl("https://m.map.daum.net/");
+                                webView.setWebViewClient(new WebViewClient());
 
                                 str_reviewCount.setText("주요 리뷰("+store.getStore_reviewCount()+")");
 

@@ -44,9 +44,11 @@
             android:id="@+id/btn_mb_dataupdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="@android:color/white"
             android:text="개인정보수정"
             android:textAllCaps="false"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -178,9 +180,11 @@
             android:id="@+id/btn_mb_pwupdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="@android:color/white"
             android:text="비밀번호변경"
             android:textAllCaps="false"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -293,9 +297,11 @@
             android:id="@+id/btn_mb_helth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="@android:color/white"
             android:text="신체사이즈입력"
             android:textAllCaps="false"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -403,9 +409,11 @@
             android:id="@+id/btn_mb_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="@android:color/white"
             android:text="프로필사진등록"
             android:textAllCaps="false"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -451,7 +459,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                android:text="사진 파일 변경 및 등록" />
+                android:text="사진 파일 첨부" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -477,11 +485,14 @@
                 android:id="@+id/btn_my_cancel"
                 android:layout_width="190dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
                 android:background="@android:color/white"
-                android:text="취소"
+                android:text="뒤로 가기"
                 android:textAlignment="center"
                 android:textAllCaps="false"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -501,10 +512,13 @@
                 android:id="@+id/btn_my_ok"
                 android:layout_width="205dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@android:color/white"
-                android:text="확인"
+                android:text="개인정보 수정"
                 android:textAlignment="center"
                 android:textAllCaps="false"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -521,10 +535,6 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@android:color/black" />
 
-            <TextView
-                android:id="@+id/textView_log"
-                android:layout_width="match_parent"
-                android:layout_height="122dp" />
         </LinearLayout>
 
     </LinearLayout>

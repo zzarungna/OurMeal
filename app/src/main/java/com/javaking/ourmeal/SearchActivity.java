@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
-    private static final String IP = "http://172.30.1.37:8080";//학원
+    //private static final String IP = "http://172.30.1.37:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
 
     TextView search_title;
     ImageView serach_result_img;
@@ -61,8 +62,8 @@ public class SearchActivity extends AppCompatActivity {
         Glide.with(getApplicationContext()).load(IP+"/OurMeal/"+result.get(0).getStore_image()).into(serach_result_img);
         serach_result_title.setText("가게명 : " + result.get(0).getStore_title());
         serach_result_num.setText("평점 : " + result.get(0).getScore_avg());
-        serach_result_addr.setText("주소" + result.get(0).getStore_address());
-        serach_result_rcount.setText(String.valueOf("댓글 수 : (" + result.get(0).getStore_reviewCount() + ")"));
+        serach_result_addr.setText("주소 : " + result.get(0).getStore_address());
+        serach_result_rcount.setText(String.valueOf("댓글 수 : (" + result.get(0).getStore_reviewCount() + "개)"));
         search_title.setText(s_title +"에 대한 검색 결과");
 
         //스토어 페이지 전환
@@ -95,7 +96,7 @@ public class SearchActivity extends AppCompatActivity {
             sub_result_Title.setText("가게명 : " + result.get(i).getStore_title());
             sub_result_num.setText("평점 : " + result.get(i).getScore_avg());
             sub_result_addr.setText("주소 : " + result.get(i).getStore_address());
-            sub_result_rcount.setText("댓글수 : (" +String.valueOf(result.get(i).getStore_reviewCount()+")"));
+            sub_result_rcount.setText("댓글수 : (" +String.valueOf(result.get(i).getStore_reviewCount()+"개)"));
 
             //메인버튼은 하나만 나오도록
             if(i>0){

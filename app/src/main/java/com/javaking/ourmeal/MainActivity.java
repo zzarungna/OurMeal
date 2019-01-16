@@ -1,6 +1,5 @@
 package com.javaking.ourmeal;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -42,7 +41,8 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String IP = "http://172.30.1.37:8080";//학원
+    //private static final String IP = "http://172.30.1.37:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
     private static String LOG_TAG = "아이유";
 
     String msg = "아이디를 입력하세요";
@@ -406,8 +406,6 @@ public class MainActivity extends AppCompatActivity {
         initRefs();
         setEvents();
         setSupportActionBar(toolBar);
-
-
     }
 
     //클릭 메소드
@@ -499,9 +497,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
     }
-
-
 
 }

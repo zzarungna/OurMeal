@@ -46,7 +46,8 @@ import java.util.ArrayList;
 public class MyPageActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "아이유";
-    private static final String IP = "http://172.30.1.37:8080";//학원
+    //private static final String IP = "http://172.30.1.37:8080";//학원
+    private static final String IP = "http://192.168.0.17:8080";//학원
 
     Toolbar toolBar;
     String image_path = null;
@@ -79,9 +80,6 @@ public class MyPageActivity extends AppCompatActivity {
     // 확인 취소 버튼
     Button btn_my_cancel;
     Button btn_my_ok;
-
-    //테스트 로그
-    TextView testLog;
 
     //회원 로그인 아이디 나중에 로그인한 값으로 대체하면된다.
     String member_id = CookieManager.getInstance().getCookie("login_id");
@@ -123,7 +121,6 @@ public class MyPageActivity extends AppCompatActivity {
         str_mb_kcal.setFocusable(false);
         str_mb_kcal.setClickable(false);
 
-        testLog = (TextView)findViewById(R.id.textView_log);
     }
 
     int num = 0;
