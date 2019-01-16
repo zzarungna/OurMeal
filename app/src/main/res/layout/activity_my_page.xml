@@ -371,7 +371,7 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="일일 권장 섭취칼로리"
+                    android:text="기초 대사량"
                     android:textAlignment="center"
                     android:textSize="20sp" />
 
@@ -380,7 +380,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:ems="10"
-                    android:hint="하루 권장 칼로리"
+                    android:hint="기초 대사량"
                     android:inputType="textPersonName"
                     android:textSize="20sp" />
 

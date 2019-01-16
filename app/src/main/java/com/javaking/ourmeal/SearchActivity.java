@@ -92,10 +92,10 @@ public class SearchActivity extends AppCompatActivity {
 
             sub_search_title.setText(s_title +"에 대한 검색 결과");
             Glide.with(getApplicationContext()).load(IP+"/OurMeal/"+result.get(i).getStore_image()).into(sub_result_image);
-            sub_result_Title.setText(result.get(i).getStore_title());
-            sub_result_num.setText(result.get(i).getScore_avg());
-            sub_result_addr.setText(result.get(i).getStore_address());
-            sub_result_rcount.setText(String.valueOf(result.get(i).getStore_reviewCount()));
+            sub_result_Title.setText("가게명 : " + result.get(i).getStore_title());
+            sub_result_num.setText("평점 : " + result.get(i).getScore_avg());
+            sub_result_addr.setText("주소 : " + result.get(i).getStore_address());
+            sub_result_rcount.setText("댓글수 : (" +String.valueOf(result.get(i).getStore_reviewCount()+")"));
 
             //메인버튼은 하나만 나오도록
             if(i>0){
