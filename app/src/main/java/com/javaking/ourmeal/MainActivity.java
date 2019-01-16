@@ -330,6 +330,13 @@ public class MainActivity extends AppCompatActivity {
                                                     Toast.makeText(getApplicationContext(), "로그인 성공!", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
+                                        }else{
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(), "로그인 실패 아이디나 비번이 맞지 않습니다.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                         }
                                     } else {
                                         erorr_code = 1;
