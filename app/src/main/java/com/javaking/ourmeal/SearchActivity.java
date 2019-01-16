@@ -59,10 +59,10 @@ public class SearchActivity extends AppCompatActivity {
 
         Log.d("이미지 경로", IP+ "/OurMeal/" +result.get(0).getStore_image());
         Glide.with(getApplicationContext()).load(IP+"/OurMeal/"+result.get(0).getStore_image()).into(serach_result_img);
-        serach_result_title.setText(result.get(0).getStore_title());
-        serach_result_num.setText(result.get(0).getScore_avg());
-        serach_result_addr.setText(result.get(0).getStore_address());
-        serach_result_rcount.setText(String.valueOf(result.get(0).getStore_reviewCount()));
+        serach_result_title.setText("가게명 : " + result.get(0).getStore_title());
+        serach_result_num.setText("평점 : " + result.get(0).getScore_avg());
+        serach_result_addr.setText("주소" + result.get(0).getStore_address());
+        serach_result_rcount.setText(String.valueOf("댓글 수 : (" + result.get(0).getStore_reviewCount() + ")"));
         search_title.setText(s_title +"에 대한 검색 결과");
 
         //스토어 페이지 전환
