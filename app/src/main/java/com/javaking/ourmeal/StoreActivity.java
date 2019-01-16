@@ -76,7 +76,7 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    private static final String IP = "http://192.168.0.17:8080";//학원
+    private static final String IP = "http://172.30.1.37:8080";//학원
 
     //로그인한 회원 아이디는
     String member_id = CookieManager.getInstance().getCookie("login_id");
@@ -251,7 +251,6 @@ public class StoreActivity extends AppCompatActivity {
                                 Gson gson = new Gson();
                                 final List<Food_menu> food_menulist = gson.fromJson(buffer.toString(), new TypeToken<List<Food_menu>>(){}.getType());
 
-                                Log.d("아이유", String.valueOf(food_menulist.size()));
                                 TextView menu_name = menuDialogView.findViewById(R.id.menu_name);
                                 TextView menu_infor = menuDialogView.findViewById(R.id.menu_infor);
                                 TextView menu_price = menuDialogView.findViewById(R.id.menu_price);
@@ -264,11 +263,17 @@ public class StoreActivity extends AppCompatActivity {
                                     menu_name.setText("메뉴 이름 : " + food_menulist.get(0).getFm_name());
                                     menu_infor.setText("메뉴 설명 : " + food_menulist.get(0).getFm_info());
                                     menu_price.setText("가격 : " +food_menulist.get(0).getFm_price()+"원");
-                                    menu_allergy.setText("알레르기 : " + food_menulist.get(0).getFm_allergy());
+
+                                    if(food_menulist.get(0).getFm_allergy().equals("null ")){
+                                        menu_allergy.setText("알레르기 정보가 없습니다.");
+                                    }else{
+                                        menu_allergy.setText("알레르기 : " + food_menulist.get(0).getFm_allergy());
+                                    }
+
                                     menu_kcal.setText("열량 : " + food_menulist.get(0).getFm_kcal()+"㎉");
                                 }
 
-                                Log.d("아이유", IP+ "/OurMeal" + food_menulist.get(0).getFm_image());
+
 
 
                                 runOnUiThread(new Runnable() {
@@ -295,7 +300,12 @@ public class StoreActivity extends AppCompatActivity {
                                                 sub_menu_name.setText("메뉴 이름 : "+food_menulist.get(i).getFm_name());
                                                 sub_menu_infor.setText("메뉴 설명 : " +food_menulist.get(i).getFm_info());
                                                 sub_menu_price.setText("가격 : " + food_menulist.get(i).getFm_price()+"원");
-                                                sub_menu_allergy.setText("알레르기 : " + food_menulist.get(i).getFm_allergy());
+                                                if(food_menulist.get(i).getFm_allergy().equals("null ")){
+                                                    sub_menu_allergy.setText("알레르기 정보가 없습니다.");
+                                                }else{
+                                                    sub_menu_allergy.setText("알레르기 : " + food_menulist.get(i).getFm_allergy());
+                                                }
+
                                                 sub_menu_kcal.setText("열량 : " + food_menulist.get(i).getFm_kcal()+"㎉");
                                                 Glide.with(getApplicationContext()).load(IP+ "/OurMeal"+food_menulist.get(i).getFm_image()).into(sub_menu_image);
 
@@ -406,7 +416,6 @@ public class StoreActivity extends AppCompatActivity {
                                         //final String store_code = "S19010800001";
                                         final String content = review.getText().toString();
                                         final String sb_number = String.valueOf(rb.getRating());
-                                        Log.d("아이유", content);
 
                                         // key, value 형태 // Content-Type: multipart/form-data; boundary=*****
                                         httpUrlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
