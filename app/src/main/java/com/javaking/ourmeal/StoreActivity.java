@@ -79,8 +79,8 @@ public class StoreActivity extends AppCompatActivity {
     private static String LOG_TAG = "MAINACTIVITY";
     HashMap<String, Object> map = new HashMap<>();
 
-    //private static final String IP = "http://172.30.1.37:8080";//학원
-    private static final String IP = "http://192.168.0.17:8080";//학원
+    private static final String IP = "http://172.30.1.26:8080";//학원
+    //private static final String IP = "http://192.168.0.17:8080";//학원
 
     //로그인한 회원 아이디는
     String member_id = CookieManager.getInstance().getCookie("login_id");

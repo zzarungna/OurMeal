@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
-    //private static final String IP = "http://172.30.1.37:8080";//학원
-    private static final String IP = "http://192.168.0.17:8080";//학원
+    private static final String IP = "http://172.30.1.26:8080";//학원
+    //private static final String IP = "http://192.168.0.17:8080";//학원
 
     TextView search_title;
     ImageView serach_result_img;
